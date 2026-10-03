@@ -32,7 +32,7 @@ void main() {
   });
   if (Directory('ios').existsSync()) {
   update('ios/Runner/Info.plist', (xml) {
-    xml = xml.replaceFirst('<string>$(PRODUCT_NAME)</string>', '<string>Tempo 100</string>');
+    xml = xml.replaceFirst(r'<string>$(PRODUCT_NAME)</string>', '<string>Tempo 100</string>');
     if (!xml.contains('NSCameraUsageDescription')) {
       xml = xml.replaceFirst('</dict>\n</plist>',
           '  <key>NSCameraUsageDescription</key>\n'
@@ -51,6 +51,11 @@ void main() {
   });
   update('ios/Runner.xcodeproj/project.pbxproj', (project) =>
       project.replaceAll(RegExp(r'IPHONEOS_DEPLOYMENT_TARGET = [0-9.]+;'), 'IPHONEOS_DEPLOYMENT_TARGET = 15.5;'));
+  }
+  final sampleTest = File('test/widget_test.dart');
+  if (sampleTest.existsSync() &&
+      sampleTest.readAsStringSync().contains('Counter increments smoke test')) {
+    sampleTest.deleteSync(); // Flutter's counter example does not match this app.
   }
   stdout.writeln('Android- og iOS-oppsettet for Tempo 100 er klart.');
 }
