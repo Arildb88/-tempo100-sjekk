@@ -1,0 +1,208 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
+import 'ad_banner.dart';
+import 'lookup_api.dart';
+import 'plate_scanner.dart';
+
+void main() => runApp(const Tempo100App());
+
+class Tempo100App extends StatelessWidget {
+  const Tempo100App({super.key});
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+    title: 'Tempo 100',
+    debugShowCheckedModeBanner: false,
+    theme: ThemeData(useMaterial3: true, colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF123B37)), scaffoldBackgroundColor: const Color(0xFFF3F6F3)),
+    home: const HomePage(),
+  );
+}
+
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  LookupApi _api = LookupApi();
+  final _plate = TextEditingController();
+  final _server = TextEditingController();
+  String? _mode;
+  String? _error;
+  LookupResult? _result;
+  bool _loading = false;
+  int _lookupVersion = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadConfig();
+  }
+
+  Future<void> _loadConfig() async {
+    final version = _lookupVersion;
+    try {
+      final mode = await _api.mode();
+      if (mounted && version == _lookupVersion) setState(() { _mode = mode; _error = null; });
+    } catch (_) {
+      if (mounted && version == _lookupVersion) setState(() => _error = 'Får ikke kontakt med serveren. Sjekk nettverket og prøv igjen.');
+    }
+  }
+
+  Future<void> _lookup() async {
+    if (_loading || _mode == null) return;
+    final value = _plate.text.trim();
+    if (value.isEmpty) return;
+    final version = ++_lookupVersion;
+    setState(() { _loading = true; _error = null; _result = null; });
+    try {
+      final result = await _api.lookup(value);
+      if (mounted && version == _lookupVersion) setState(() => _result = result);
+    } catch (error) {
+      if (mounted && version == _lookupVersion) setState(() => _error = error is LookupException ? error.message : 'Kunne ikke hente oppslaget. Prøv igjen.');
+    } finally {
+      if (mounted && version == _lookupVersion) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _scan() async {
+    final detected = await Navigator.of(context).push<String>(MaterialPageRoute(builder: (_) => const PlateScanner()));
+    if (!mounted || detected == null) return;
+    _plate.text = detected;
+    await _lookup();
+  }
+
+  void _setTestServer() {
+    if (kReleaseMode) return;
+    final address = _server.text.trim();
+    try {
+      final next = LookupApi(baseUrl: address.isEmpty ? null : address);
+      if (next.base.host.isEmpty) throw const FormatException('Mangler servernavn.');
+      _api.dispose();
+      _api = next;
+      _lookupVersion++;
+      setState(() { _mode = null; _result = null; _error = null; _loading = false; });
+      _loadConfig();
+    } catch (_) {
+      setState(() => _error = 'Skriv en gyldig serveradresse, for eksempel http://192.168.1.10:3000.');
+    }
+  }
+
+  @override
+  void dispose() {
+    _lookupVersion++;
+    _plate.dispose();
+    _server.dispose();
+    _api.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Tempo 100'), backgroundColor: const Color(0xFFF3F6F3)),
+    body: SafeArea(child: Column(children: [
+      Expanded(child: ListView(padding: const EdgeInsets.fromLTRB(20, 12, 20, 24), children: [
+        const Text('Er tilhengeren registrert som godkjent?', style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold, height: 1.2)),
+        const SizedBox(height: 16),
+        if (_mode != null) _Notice(_mode == 'demo' ? 'DEMO · fiktive data' : 'Registeroppslag · Statens vegvesen', _mode == 'demo' ? const Color(0xFFFFF2D6) : const Color(0xFFE3F5E8)),
+        if (!kReleaseMode) ExpansionTile(title: const Text('Testserver (debug)'), children: [
+          TextField(controller: _server, keyboardType: TextInputType.url,
+            decoration: const InputDecoration(labelText: 'Serveradresse', hintText: 'http://192.168.1.10:3000', border: OutlineInputBorder()),
+            onSubmitted: (_) => _setTestServer()),
+          TextButton(onPressed: _setTestServer, child: const Text('Koble til server')),
+        ]),
+        const SizedBox(height: 18),
+        Card(elevation: 0, color: Colors.white, child: Padding(padding: const EdgeInsets.all(18), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          TextField(controller: _plate, textCapitalization: TextCapitalization.characters, keyboardType: TextInputType.text,
+            decoration: const InputDecoration(labelText: 'Hengerens registreringsnummer', hintText: 'AB 1234', border: OutlineInputBorder()),
+            onSubmitted: (_) => _lookup()),
+          const SizedBox(height: 12),
+          FilledButton(onPressed: _loading || _mode == null ? null : _lookup, child: Text(_loading ? 'Sjekker …' : 'Sjekk registreringsnummer')),
+          OutlinedButton.icon(onPressed: _mode == null ? null : _scan, icon: const Icon(Icons.camera_alt_outlined), label: const Text('Les skilt med kamera')),
+          if (_mode == 'demo') ...[
+            const SizedBox(height: 8),
+            const Text('Fiktive eksempler:', style: TextStyle(fontSize: 12)),
+            Wrap(spacing: 8, children: [
+              for (final example in ['DEMO100', 'DEMO80', 'DEMOU', 'DEMOE'])
+                ActionChip(label: Text(example), onPressed: () { _plate.text = example; _lookup(); }),
+            ]),
+          ],
+        ]))),
+        if (_error != null) ...[
+          const SizedBox(height: 12),
+          _Notice(_error!, const Color(0xFFFFE8E8)),
+          if (_mode == null) TextButton(onPressed: _loadConfig, child: const Text('Prøv på nytt')),
+        ],
+        if (_result != null) ...[const SizedBox(height: 16), _ResultCard(_result!)],
+        const SizedBox(height: 24),
+        const Text('Kontroller opplysninger og skilt. Resultatet gjelder hengerens registerstatus, ikke om den aktuelle kjøringen er lovlig. For passasjer eller når bilen står parkert.', style: TextStyle(fontSize: 12, color: Color(0xFF556B61))),
+      ])),
+      const ConsentBanner(),
+    ])),
+  );
+}
+
+class _Notice extends StatelessWidget {
+  const _Notice(this.text, this.color);
+  final String text;
+  final Color color;
+  @override
+  Widget build(BuildContext context) => Container(
+    decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(10)),
+    padding: const EdgeInsets.all(12), child: Text(text),
+  );
+}
+
+class _ResultCard extends StatelessWidget {
+  const _ResultCard(this.result);
+  final LookupResult result;
+
+  @override
+  Widget build(BuildContext context) {
+    final status = result.status;
+    final color = switch (status) {
+      'approved' => const Color(0xFF217A4B),
+      'not_recorded' => const Color(0xFFAF3434),
+      _ => const Color(0xFF9B7520),
+    };
+    final heading = switch (status) {
+      'approved' => 'Registrert som godkjent',
+      'not_recorded' => 'Ingen registrert godkjenning',
+      'not_applicable' => 'Utenfor ordningen',
+      _ => 'Kan ikke bekreftes',
+    };
+    final checkedAt = DateTime.tryParse(result.data['checkedAt'] as String? ?? '')?.toLocal();
+    return Card(elevation: 0, color: Colors.white, clipBehavior: Clip.antiAlias,
+      child: Container(decoration: BoxDecoration(border: Border(top: BorderSide(color: color, width: 5))),
+        padding: const EdgeInsets.all(18), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          if (result.mode == 'demo') const Text('DEMO · FIKTIVE DATA', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(result.plate, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 10),
+          Text(heading, style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: color)),
+          const SizedBox(height: 6),
+          Text(result.tempo['explanation'] as String? ?? ''),
+          for (final warning in result.blockers) ...[const SizedBox(height: 8), _Notice('OBS: $warning', const Color(0xFFFFF0D9))],
+          const SizedBox(height: 8),
+          ExpansionTile(title: const Text('Utvidet informasjon'), tilePadding: EdgeInsets.zero, childrenPadding: EdgeInsets.zero, children: [
+            _info('Merke og modell', [result.vehicle['brand'], result.vehicle['model']].whereType<String>().join(' ')),
+            _info('Kjøretøyklasse', result.vehicle['category']),
+            _info('Tillatt totalvekt', result.vehicle['totalWeight'] == null ? null : '${result.vehicle['totalWeight']} kg'),
+            _info('Registreringsstatus', result.vehicle['registration']),
+            _info('EU-kontrollfrist', result.inspection['deadline']),
+            _info('Hentet', checkedAt == null ? null : '${checkedAt.day}.${checkedAt.month}.${checkedAt.year} kl. ${checkedAt.hour.toString().padLeft(2, '0')}:${checkedAt.minute.toString().padLeft(2, '0')}'),
+            const SizedBox(height: 10),
+            Text(result.driving['explanation'] as String? ?? ''),
+          ]),
+        ])),
+    );
+  }
+
+  Widget _info(String label, Object? value) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 5),
+    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Expanded(child: Text(label, style: const TextStyle(color: Color(0xFF5B7065)))),
+      Expanded(child: Text(value?.toString().isNotEmpty == true ? value.toString() : 'Ikke oppgitt', textAlign: TextAlign.end)),
+    ]),
+  );
+}
