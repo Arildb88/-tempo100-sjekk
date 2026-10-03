@@ -74,3 +74,9 @@ Ingen database, analyseverktøy eller oppslagshistorikk er inkludert. Serveren l
 - [Tempo 100 og krav til trekkbil/tilhenger](https://www.vegvesen.no/kjoretoy/eie-og-vedlikeholde/tilhenger/tempo100/krav-til-trekkbil-og-tilhenger-for-tempo-100-godkjenning/)
 
 Undersøkt 3. oktober 2026.
+
+## Kamera og enkel visning
+
+Standardvisningen viser grønn registrert godkjenning, rød ingen registrert godkjenning eller gul ukjent. Detaljer ligger under Utvidet informasjon. Ingen registrert godkjenning er ikke et selvstendig bevis på en trafikkovertredelse.
+
+Les skilt med kamera åpner mobilens kamerabildevalg. Et stillbilde leses med Tesseract.js 5.1.1 i nettleseren; dette er ikke kontinuerlig automatisk live-skanning. Brukeren velger og kontrollerer nummeret før oppslag. Bildet lastes ikke opp eller lagres av appen. OCR-motor og språkdata lastes fra CDN ved første bruk og trenger nett. Vanlige norske skilt med to bokstaver og 4–5 sifre foreslås; personlige skilt kan skrives manuelt. Kamera/HEIC-støtte og presisjon må prøves på faktisk iPhone/Android.

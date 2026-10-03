@@ -10,16 +10,19 @@
 <body>
   <header><a class="brand" href="/"><span class="logo">100</span> Tempo Sjekk</a><span class="tag">Norske tilhengere</span></header>
   <main>
-    <section class="intro"><p class="eyebrow">FRA REGISTRERINGSNUMMER TIL REGISTERSTATUS</p><h1>Er hengeren<br>Tempo 100-godkjent?</h1><p>Se om hengeren er registrert med Tempo 100-koden hos Statens vegvesen.</p></section>
+    <section class="intro"><h1>Tempo 100-sjekk</h1><p>Er tilhengeren registrert som godkjent?</p></section>
     <section class="card lookup" aria-label="Registreringsoppslag">
       <p id="mode" class="mode">Laster datamodus …</p>
-      <form id="lookup"><label for="plate">Hengerens registreringsnummer</label><div class="input-row"><div class="plate-wrap"><span class="country" aria-hidden="true">N</span><input id="plate" name="plate" placeholder="AB 1234" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" required aria-describedby="hint"></div><button id="submit" type="submit" disabled>Sjekk hengeren <span aria-hidden="true">→</span></button></div><p id="hint" class="small">Norske kjennemerker, inkludert personlige skilt.</p></form>
+      <form id="lookup"><label for="plate">Hengerens registreringsnummer</label><div class="input-row"><div class="plate-wrap"><span class="country" aria-hidden="true">N</span><input id="plate" name="plate" placeholder="AB 1234" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" required aria-describedby="hint"></div><button id="submit" type="submit" disabled>Sjekk</button></div></form>
+      <label class="camera-button" for="camera-photo">Les skilt med kamera</label>
+      <input id="camera-photo" class="visually-hidden" type="file" accept="image/*" capture="environment">
+      <p id="scan-status" class="small" role="status"></p>
+      <div id="scan-candidates" class="examples"></div>
       <div id="demo" hidden><p class="small">Prøv fiktive eksempler:</p><div class="examples"><button type="button" data-plate="DEMO100">Godkjent</button><button type="button" data-plate="DEMO80">Annen kode</button><button type="button" data-plate="DEMOU">Ukjent</button><button type="button" data-plate="DEMOE">Utgått kontrollfrist</button></div></div>
       <p id="error" role="alert" hidden></p>
     </section>
     <section id="result" class="card result" aria-live="polite" aria-atomic="true" hidden></section>
-    <section class="information"><h2>Godkjenning og lovlig kjøring er to ulike kontroller</h2><p>Hengerens godkjenning er første steg. For å kjøre i 100 km/t må også trekkbilen, dekkene, lasten og de øvrige vilkårene være i orden. Veiens fartsgrense gjelder alltid.</p><a href="https://www.vegvesen.no/kjoretoy/eie-og-vedlikeholde/tilhenger/tempo100/" target="_blank" rel="noopener noreferrer">Se krav og kalkulator hos Statens vegvesen ↗</a></section>
   </main>
-  <footer>Uavhengig prosjekt · Ingen tilknytning til Statens vegvesen.<br>Oppslag lagres ikke av appen. Bruk appen når du står parkert.</footer>
+  <footer>Registerstatus for hengeren. Bruk kameraet når du står parkert.</footer>
 </body>
 </html>
