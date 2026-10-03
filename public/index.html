@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#123b37">
-  <title>Tempo 100 Sjekk</title>
+  <title>100 km/t sjekk</title>
   <link rel="icon" href="/icon.svg"><link rel="manifest" href="/manifest.webmanifest">
   <link rel="stylesheet" href="/style.css"><script src="/app.js" type="module"></script>
 </head>
 <body>
   <header><a class="brand" href="/"><span class="logo">100</span> Tempo Sjekk</a><span class="tag">Norske tilhengere</span></header>
   <main>
-    <section class="intro"><h1>Tempo 100-sjekk</h1><p>Er tilhengeren registrert som godkjent?</p></section>
+    <section class="intro"><h1>Tilhenger sjekk</h1><p>Kan tilhengeren kjøres i 100 km/t?</p></section>
     <section class="card lookup" aria-label="Registreringsoppslag">
       <p id="mode" class="mode">Laster datamodus …</p>
-      <form id="lookup"><label for="plate">Hengerens registreringsnummer</label><div class="input-row"><div class="plate-wrap"><span class="country" aria-hidden="true">N</span><input id="plate" name="plate" placeholder="AB 1234" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" required></div><button id="submit" type="submit" disabled>Sjekk</button></div></form>
+      <form id="lookup"><label for="plate">Reg nr.</label><div class="input-row"><div class="plate-wrap"><span class="country" aria-hidden="true">N</span><input id="plate" name="plate" placeholder="AB 1234" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" required></div><button id="submit" type="submit" disabled>Sjekk</button></div></form>
       <button id="open-camera" class="camera-button" type="button">Les skilt med kamera</button>
       <input id="camera-photo" class="visually-hidden" type="file" accept="image/*" capture="environment">
       <p id="scan-status" class="small" role="status"></p>
