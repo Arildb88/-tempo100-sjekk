@@ -7,11 +7,14 @@ import 'package:http/http.dart' as http;
 const _configuredBase = String.fromEnvironment('API_BASE_URL');
 
 class LookupApi {
-  LookupApi({http.Client? client}) : _client = client ?? http.Client();
+  LookupApi({http.Client? client, this.baseUrl}) : _client = client ?? http.Client();
   final http.Client _client;
+  final String? baseUrl;
 
   Uri get base {
-    final input = _configuredBase.isNotEmpty
+    final input = baseUrl?.trim().isNotEmpty == true
+        ? baseUrl!.trim()
+        : _configuredBase.isNotEmpty
         ? _configuredBase
         : Platform.isAndroid
             ? 'http://10.0.2.2:3000'

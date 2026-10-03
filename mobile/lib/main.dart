@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'ad_banner.dart';
@@ -24,8 +25,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _api = LookupApi();
+  LookupApi _api = LookupApi();
   final _plate = TextEditingController();
+  final _server = TextEditingController();
   String? _mode;
   String? _error;
   LookupResult? _result;
@@ -39,11 +41,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadConfig() async {
+    final version = _lookupVersion;
     try {
       final mode = await _api.mode();
-      if (mounted) setState(() { _mode = mode; _error = null; });
+      if (mounted && version == _lookupVersion) setState(() { _mode = mode; _error = null; });
     } catch (_) {
-      if (mounted) setState(() => _error = 'Får ikke kontakt med serveren. Sjekk nettverket og prøv igjen.');
+      if (mounted && version == _lookupVersion) setState(() => _error = 'Får ikke kontakt med serveren. Sjekk nettverket og prøv igjen.');
     }
   }
 
@@ -70,10 +73,27 @@ class _HomePageState extends State<HomePage> {
     await _lookup();
   }
 
+  void _setTestServer() {
+    if (kReleaseMode) return;
+    final address = _server.text.trim();
+    try {
+      final next = LookupApi(baseUrl: address.isEmpty ? null : address);
+      if (next.base.host.isEmpty) throw const FormatException('Mangler servernavn.');
+      _api.dispose();
+      _api = next;
+      _lookupVersion++;
+      setState(() { _mode = null; _result = null; _error = null; _loading = false; });
+      _loadConfig();
+    } catch (_) {
+      setState(() => _error = 'Skriv en gyldig serveradresse, for eksempel http://192.168.1.10:3000.');
+    }
+  }
+
   @override
   void dispose() {
     _lookupVersion++;
     _plate.dispose();
+    _server.dispose();
     _api.dispose();
     super.dispose();
   }
@@ -86,6 +106,12 @@ class _HomePageState extends State<HomePage> {
         const Text('Er tilhengeren registrert som godkjent?', style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold, height: 1.2)),
         const SizedBox(height: 16),
         if (_mode != null) _Notice(_mode == 'demo' ? 'DEMO · fiktive data' : 'Registeroppslag · Statens vegvesen', _mode == 'demo' ? const Color(0xFFFFF2D6) : const Color(0xFFE3F5E8)),
+        if (!kReleaseMode) ExpansionTile(title: const Text('Testserver (debug)'), children: [
+          TextField(controller: _server, keyboardType: TextInputType.url,
+            decoration: const InputDecoration(labelText: 'Serveradresse', hintText: 'http://192.168.1.10:3000', border: OutlineInputBorder()),
+            onSubmitted: (_) => _setTestServer()),
+          TextButton(onPressed: _setTestServer, child: const Text('Koble til server')),
+        ]),
         const SizedBox(height: 18),
         Card(elevation: 0, color: Colors.white, child: Padding(padding: const EdgeInsets.all(18), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           TextField(controller: _plate, textCapitalization: TextCapitalization.characters, keyboardType: TextInputType.text,

@@ -22,7 +22,9 @@ Start serveren i repoets rot med `.env` for demomodus eller live-modus. For Andr
 flutter run --dart-define=API_BASE_URL=https://DIN-SERVER.NO
 ```
 
-For lokal test mot en PC på samme nett, sett `HOST=0.0.0.0` på serveren og bruk `http://PC-ENS-IP:3000` som `API_BASE_URL`. Android tillater lokal HTTP bare i debug-konfigurasjonen. En iPhone bør testes mot HTTPS. En release-bygging avviser HTTP og trenger en reell HTTPS-server. Testsiden som tidligere ble publisert er en separat demo og fungerer ikke som live API-server for denne appen.
+For lokal test mot en PC på samme nett, sett `HOST=0.0.0.0` på serveren og bruk `http://PC-ENS-IP:3000` som `API_BASE_URL`. I debug-APK-en fra GitHub Actions kan du også åpne **Testserver (debug)** og skrive denne adressen i appen. Telefon og PC må være på samme nett, og brannmuren må slippe gjennom port 3000. Android tillater lokal HTTP bare i debug-konfigurasjonen. En iPhone bør testes mot HTTPS. En release-bygging avviser HTTP og trenger en reell HTTPS-server. Testsiden som tidligere ble publisert er en separat demo og fungerer ikke som live API-server for denne appen.
+
+Under **Actions → Flutter mobile** i GitHub kan du laste ned `tempo100-android-debug` fra en vellykket kjøring og pakke ut APK-en. Dette er en debug-signert testversjon for direkte installasjon; den er ikke en Play Store-pakke.
 
 ## Annonser
 
