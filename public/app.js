@@ -23,6 +23,7 @@ function render(data) {
     not_applicable: ['–', 'Ikke omfattet', 'Dette kjøretøyet er utenfor ordningen'],
   }[data.tempo100.status] ?? ['?', 'Ukjent', ''];
   result.append(node('span', data.plate, 'badge'), node('div', compact[0], 'status-symbol'), node('h2', compact[1]), node('p', compact[2], 'status-caption'));
+  for (const warning of data.driving.blockers) result.append(node('p', `OBS: ${warning}`, 'warning'));
   const expanded = node('details', undefined, 'expanded');
   expanded.append(node('summary', 'Utvidet informasjon'), node('p', data.tempo100.explanation));
   const details = node('dl');
@@ -34,7 +35,6 @@ function render(data) {
   ];
   for (const [label, value] of fields) { const pair = node('div'); pair.append(node('dt', label), node('dd', display(value))); details.append(pair); }
   expanded.append(details);
-  for (const warning of data.driving.blockers) expanded.append(node('p', warning, 'warning'));
   if (data.inspection.status === 'unknown') expanded.append(node('p', 'EU-kontrollstatus er ikke avklart i oppslaget.', 'small'));
   const notice = node('div', undefined, 'notice');
   notice.append(node('strong', 'Kan denne ekvipasjen kjøre i 100 km/t?'), node('p', data.driving.explanation));
@@ -60,7 +60,15 @@ async function initialize() {
   try {
     const response = await fetch('/api/config');
     if (!response.ok) throw new Error('Konfigurasjonen kunne ikke lastes.');
-    ({ mode } = await response.json());
+    const config = await response.json();
+    ({ mode } = config);
+    for (const banner of document.querySelectorAll('.ad-banner')) {
+      if (!config.sponsor) continue;
+      const link = banner.querySelector('.ad-link');
+      link.textContent = config.sponsor.text;
+      link.href = config.sponsor.url;
+      banner.hidden = false;
+    }
     const banner = document.querySelector('#mode');
     banner.textContent = mode === 'demo' ? 'Demo · Fiktive data' : 'Registeroppslag · Statens vegvesen';
     banner.classList.toggle('live', mode === 'live');

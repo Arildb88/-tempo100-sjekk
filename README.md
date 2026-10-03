@@ -2,7 +2,7 @@
 
 En mobiltilpasset norsk webapp som slår opp tilhengerens registreringsnummer og undersøker om **teknisk underkode `TEMPO100`** finnes i Statens vegvesens registerdata.
 
-**Status: første versjon.** Kodeverket og API-strukturen er undersøkt. Ekte oppslag er ikke prøvd med en API-nøkkel eller en kjent Tempo 100-henger. Demoen bruker utelukkende fiktive data. Appen avgjør ikke om en konkret bil/henger-kombinasjon har lov til å kjøre i 100 km/t.
+**Status: testversjon.** Kodeverket og API-strukturen er undersøkt. Eieren har bekreftet at et lokalt live-oppslag fungerer, men resultatet er ikke kontrollert mot en kjent Tempo 100-godkjent henger. Demoen bruker utelukkende fiktive data. Appen avgjør ikke om en konkret bil/henger-kombinasjon har lov til å kjøre i 100 km/t.
 
 ## Start lokalt
 
@@ -61,9 +61,22 @@ docker run --rm -p 3000:3000 tempo100-sjekk
 
 For ekte oppslag: legg til `--env-file .env` før imagenavnet. Nettleseren kan legge siden til på hjemskjermen. Dette er en webapp med manifest; ingen offline-oppslag eller native App Store/Google Play-app er laget.
 
+## Sponsorannonse
+
+Appen støtter en enkel, merket sponsorannonse på hovedsiden og i kameravisningen. Sett begge verdiene i serverens `.env` for å vise den:
+
+```text
+ANNONSE_TEKST=Eksempelpartner
+ANNONSE_URL=https://example.com/
+```
+
+Teksten er begrenset til 90 tegn og lenken må bruke HTTPS. Banneret skjules når sponsor ikke er konfigurert. Det er ingen annonsenettverkskode, informasjonskapsler eller sporing i denne løsningen. Sponsorens nettsted får likevel brukerens vanlige nettverkstrafikk når vedkommende åpner lenken. Ved bruk av Google AdSense eller lignende må samtykke og personvern for deres teknologi vurderes separat.
+
 ## Publisering og personvern
 
-Ingen database, analyseverktøy eller oppslagshistorikk er inkludert. Serveren logger ikke registreringsnumre eller rådata. Registreringsnummeret sendes til Statens vegvesen ved ekte oppslag og er en personopplysning. Før offentlig lansering: avklar behandlingsgrunnlag, personverntekst og API-vilkår; kontroller også hostingens/proxyens logger. Bruk HTTPS og tilgangsbegrensning ved behov. Ratebegrensningen er per tilkoblings-IP i én serverprosess og stoler ikke på klientens X-Forwarded-For.
+Ingen database, analyseverktøy eller oppslagshistorikk er inkludert. Serveren logger ikke registreringsnumre eller rådata. Registreringsnummeret sendes til Statens vegvesen ved ekte oppslag og regnes som en personopplysning. Før offentlig lansering: avklar behandlingsgrunnlag, publiser personverntekst og sjekk vilkårene for viderebruk av API-data; kontroller også hostingens/proxyens logger. Bruk HTTPS med fungerende kameratilgang. Ratebegrensningen er per tilkoblings-IP i én serverprosess og stoler ikke på klientens X-Forwarded-For. `MAX_DAILY_LOOKUPS` begrenser antall live-oppslag per UTC-døgn i samme prosess (standard 50 000). Telleverket lagres bare i minnet og deles ikke mellom instanser eller omstarter; bruk ekstern kvote/ratebegrensning ved større offentlig drift.
+
+Vis et resultat fra en kjent Tempo 100-godkjent henger og sammenlign det med vognkort/godkjenningsattest, også for en ordinær henger. Prøv kamera/OCR på mobil i realistiske forhold før utgivelse. Grønn status gjelder bare registrert godkjenning for **hengeren**. Appen avgjør ikke om kjøringen er lovlig, og resultatet er ikke bevis for å anklage en annen trafikant.
 
 ## Kilder
 
@@ -79,11 +92,11 @@ Undersøkt 3. oktober 2026.
 
 Standardvisningen viser grønn registrert godkjenning, rød ingen registrert godkjenning eller gul ukjent. Detaljer ligger under Utvidet informasjon. Ingen registrert godkjenning er ikke et selvstendig bevis på en trafikkovertredelse.
 
-Les skilt med kamera åpner mobilens kamerabildevalg. Et stillbilde leses med Tesseract.js 5.1.1 i nettleseren; dette er ikke kontinuerlig automatisk live-skanning. Brukeren velger og kontrollerer nummeret før oppslag. Bildet lastes ikke opp eller lagres av appen. OCR-motor og språkdata lastes fra CDN ved første bruk og trenger nett. Vanlige norske skilt med to bokstaver og 4–5 sifre foreslås; personlige skilt kan skrives manuelt. Kamera/HEIC-støtte og presisjon må prøves på faktisk iPhone/Android.
+Et stillbilde kan leses med Tesseract.js 5.1.1 i nettleseren; brukeren velger og kontrollerer nummeret før oppslag. Bildet lastes ikke opp eller lagres av appen. OCR-motor og språkdata lastes fra CDN ved første bruk og trenger nett. Vanlige norske skilt med to bokstaver og 4–5 sifre foreslås; personlige skilt kan skrives manuelt. Kamera/HEIC-støtte og presisjon må prøves på faktisk iPhone/Android.
 
 ### Direkte kamera og annonseplass
 
-Kameraknappen åpner nå en direkte forhåndsvisning med bakre kamera, digital zoom og knapp for å lese et stillbilde. Kameraet stoppes ved lukking eller når siden skjules. Ingen kontinuerlig OCR eller videoopptak utføres. Kameratilgang krever HTTPS eller localhost. Bildevalg er tilgjengelig som alternativ. Hovedsiden og kameravisningen har en merket annonseplass uten aktivt annonsenettverk, sporingsskript eller reelle annonser.
+Kameraknappen åpner en direkte forhåndsvisning med bakre kamera og digital zoom. Kameraet stoppes ved lukking eller når siden skjules. Ingen videoopptak utføres. Kameratilgang krever HTTPS eller localhost. Bildevalg er tilgjengelig som alternativ. Hovedsiden og kameravisningen viser en merket direkte sponsorannonse hvis den er konfigurert.
 
 ### Automatisk skiltlesing
 
