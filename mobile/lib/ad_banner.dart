@@ -46,9 +46,8 @@ class _ConsentBannerState extends State<ConsentBanner> {
     _requested = true;
     await MobileAds.instance.initialize();
     if (!mounted) return;
-    final width = MediaQuery.sizeOf(context).width.floor();
-    final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width);
-    if (!mounted || size == null) return;
+    // A compact 320×50 banner stays clear of the lookup and camera controls.
+    const size = AdSize.banner;
     final id = Platform.isAndroid
         ? (kReleaseMode ? _androidBanner : _androidTest)
         : (kReleaseMode ? _iosBanner : _iosTest);
