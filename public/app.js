@@ -86,8 +86,7 @@ function loadOCR() {
   });
   return ocrLoader;
 }
-photo.addEventListener('change', async () => {
-  const file = photo.files?.[0];
+async function readPlateImage(file) {
   if (!file) return;
   candidates.replaceChildren(); result.hidden = true; error.hidden = true;
   photo.disabled = true; submit.disabled = true;
@@ -117,4 +116,63 @@ photo.addEventListener('change', async () => {
     }
   } catch (failure) { scanStatus.textContent = failure.message || 'Kunne ikke lese bildet. Skriv nummeret manuelt.'; }
   finally { bitmap?.close(); if (worker) await worker.terminate().catch(() => {}); photo.value = ''; photo.disabled = false; submit.disabled = !mode; }
+ }
+photo.addEventListener('change', () => readPlateImage(photo.files?.[0]));
+
+const cameraDialog = document.querySelector('#camera-dialog');
+const video = document.querySelector('#camera-video');
+const cameraMessage = document.querySelector('#camera-message');
+const captureButton = document.querySelector('#capture-plate');
+const zoom = document.querySelector('#camera-zoom');
+let cameraStream;
+let previousFocus;
+function stopCamera() {
+  cameraStream?.getTracks().forEach(track => track.stop());
+  cameraStream = null; video.srcObject = null; captureButton.disabled = true;
+}
+function closeCamera() {
+  stopCamera(); if (cameraDialog.open) cameraDialog.close(); previousFocus?.focus();
+}
+document.querySelector('#open-camera').addEventListener('click', async () => {
+  previousFocus = document.activeElement;
+  cameraMessage.textContent = 'Starter kamera …'; cameraMessage.hidden = false;
+  zoom.value = '1'; video.style.transform = 'scale(1)'; document.querySelector('#zoom-value').value = '1×';
+  cameraDialog.showModal();
+  try {
+    if (!navigator.mediaDevices?.getUserMedia) throw new Error('Kamera er ikke tilgjengelig her. Åpne siden i Safari eller bruk et bilde.');
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+    if (!cameraDialog.open) { stream.getTracks().forEach(track => track.stop()); return; }
+    cameraStream = stream; video.srcObject = stream; await video.play();
+    if (video.videoWidth) { captureButton.disabled = false; cameraMessage.hidden = true; }
+  } catch (failure) {
+    stopCamera();
+    cameraMessage.textContent = failure.name === 'NotAllowedError' ? 'Kameratilgang ble ikke gitt. Du kan bruke et bilde i stedet.' : failure.message || 'Kunne ikke starte kameraet.';
+  }
+});
+video.addEventListener('loadedmetadata', () => { if (cameraDialog.open && cameraStream) { captureButton.disabled = false; cameraMessage.hidden = true; } });
+document.querySelector('#close-camera').addEventListener('click', closeCamera);
+cameraDialog.addEventListener('cancel', () => stopCamera());
+cameraDialog.addEventListener('close', stopCamera);
+document.addEventListener('visibilitychange', () => { if (document.hidden && cameraDialog.open) closeCamera(); });
+window.addEventListener('pagehide', stopCamera);
+zoom.addEventListener('input', () => {
+  video.style.transform = `scale(${zoom.value})`;
+  document.querySelector('#zoom-value').value = `${Number(zoom.value).toFixed(1)}×`;
+});
+document.querySelector('#choose-photo').addEventListener('click', () => { closeCamera(); photo.click(); });
+captureButton.addEventListener('click', async () => {
+  if (!cameraStream || !video.videoWidth) return;
+  captureButton.disabled = true;
+  const stage = document.querySelector('.camera-stage');
+  const targetRatio = stage.clientWidth / stage.clientHeight;
+  let width = video.videoWidth, height = video.videoHeight;
+  if (width / height > targetRatio) width = height * targetRatio; else height = width / targetRatio;
+  width /= Number(zoom.value); height /= Number(zoom.value);
+  const canvas = document.createElement('canvas');
+  const ratio = Math.min(1, 1800 / Math.max(width, height));
+  canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio);
+  canvas.getContext('2d').drawImage(video, (video.videoWidth-width)/2, (video.videoHeight-height)/2, width, height, 0, 0, canvas.width, canvas.height);
+  const image = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.95));
+  closeCamera();
+  if (image) await readPlateImage(image); else scanStatus.textContent = 'Kunne ikke ta bilde. Prøv igjen.';
 });

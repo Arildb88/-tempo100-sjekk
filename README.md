@@ -80,3 +80,7 @@ Undersøkt 3. oktober 2026.
 Standardvisningen viser grønn registrert godkjenning, rød ingen registrert godkjenning eller gul ukjent. Detaljer ligger under Utvidet informasjon. Ingen registrert godkjenning er ikke et selvstendig bevis på en trafikkovertredelse.
 
 Les skilt med kamera åpner mobilens kamerabildevalg. Et stillbilde leses med Tesseract.js 5.1.1 i nettleseren; dette er ikke kontinuerlig automatisk live-skanning. Brukeren velger og kontrollerer nummeret før oppslag. Bildet lastes ikke opp eller lagres av appen. OCR-motor og språkdata lastes fra CDN ved første bruk og trenger nett. Vanlige norske skilt med to bokstaver og 4–5 sifre foreslås; personlige skilt kan skrives manuelt. Kamera/HEIC-støtte og presisjon må prøves på faktisk iPhone/Android.
+
+### Direkte kamera og annonseplass
+
+Kameraknappen åpner nå en direkte forhåndsvisning med bakre kamera, digital zoom og knapp for å lese et stillbilde. Kameraet stoppes ved lukking eller når siden skjules. Ingen kontinuerlig OCR eller videoopptak utføres. Kameratilgang krever HTTPS eller localhost. Bildevalg er tilgjengelig som alternativ. Hovedsiden og kameravisningen har en merket annonseplass uten aktivt annonsenettverk, sporingsskript eller reelle annonser.

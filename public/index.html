@@ -13,16 +13,26 @@
     <section class="intro"><h1>Tempo 100-sjekk</h1><p>Er tilhengeren registrert som godkjent?</p></section>
     <section class="card lookup" aria-label="Registreringsoppslag">
       <p id="mode" class="mode">Laster datamodus …</p>
-      <form id="lookup"><label for="plate">Hengerens registreringsnummer</label><div class="input-row"><div class="plate-wrap"><span class="country" aria-hidden="true">N</span><input id="plate" name="plate" placeholder="AB 1234" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" required aria-describedby="hint"></div><button id="submit" type="submit" disabled>Sjekk</button></div></form>
-      <label class="camera-button" for="camera-photo">Les skilt med kamera</label>
+      <form id="lookup"><label for="plate">Hengerens registreringsnummer</label><div class="input-row"><div class="plate-wrap"><span class="country" aria-hidden="true">N</span><input id="plate" name="plate" placeholder="AB 1234" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" required></div><button id="submit" type="submit" disabled>Sjekk</button></div></form>
+      <button id="open-camera" class="camera-button" type="button">Les skilt med kamera</button>
       <input id="camera-photo" class="visually-hidden" type="file" accept="image/*" capture="environment">
       <p id="scan-status" class="small" role="status"></p>
       <div id="scan-candidates" class="examples"></div>
       <div id="demo" hidden><p class="small">Prøv fiktive eksempler:</p><div class="examples"><button type="button" data-plate="DEMO100">Godkjent</button><button type="button" data-plate="DEMO80">Annen kode</button><button type="button" data-plate="DEMOU">Ukjent</button><button type="button" data-plate="DEMOE">Utgått kontrollfrist</button></div></div>
       <p id="error" role="alert" hidden></p>
     </section>
+    <aside class="ad-banner" aria-label="Annonseplass"><span>ANNONSE</span><strong>Din annonse her</strong><small>Plass for en sponsor</small></aside>
     <section id="result" class="card result" aria-live="polite" aria-atomic="true" hidden></section>
   </main>
+  <dialog id="camera-dialog" aria-labelledby="camera-title">
+    <div class="camera-header"><button id="close-camera" type="button" aria-label="Lukk kamera">Lukk</button><h2 id="camera-title">Skann registreringsnummer</h2></div>
+    <div class="camera-stage"><video id="camera-video" autoplay muted playsinline></video><div class="camera-guide" aria-hidden="true"></div><p id="camera-message" role="status">Starter kamera …</p></div>
+    <label class="zoom-label" for="camera-zoom">Zoom <output id="zoom-value">1×</output></label><input id="camera-zoom" type="range" min="1" max="3" step="0.1" value="1">
+    <aside class="ad-banner camera-ad" aria-label="Annonseplass"><span>ANNONSE</span><strong>Din annonse her</strong><small>Plass for en sponsor</small></aside>
+    <p class="camera-hint">Sikt mot hengerens skilt</p>
+    <button id="capture-plate" type="button" disabled>Les skilt</button>
+    <button id="choose-photo" type="button">Bruk et bilde i stedet</button>
+  </dialog>
   <footer>Registerstatus for hengeren. Bruk kameraet når du står parkert.</footer>
 </body>
 </html>
