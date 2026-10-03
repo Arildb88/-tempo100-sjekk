@@ -1,6 +1,8 @@
-# Tempo 100 Sjekk
+# Tempo 100
 
 En mobiltilpasset norsk webapp som slår opp tilhengerens registreringsnummer og undersøker om **teknisk underkode `TEMPO100`** finnes i Statens vegvesens registerdata.
+
+**Navn for iOS og Android:** Tempo 100. Planlagt mobilklient bygges i Flutter med samme server for oppslag. Webappen i dette repoet er fortsatt testversjonen; det finnes ingen native mobilklient ennå.
 
 **Status: testversjon.** Kodeverket og API-strukturen er undersøkt. Eieren har bekreftet at et lokalt live-oppslag fungerer, men resultatet er ikke kontrollert mot en kjent Tempo 100-godkjent henger. Demoen bruker utelukkende fiktive data. Appen avgjør ikke om en konkret bil/henger-kombinasjon har lov til å kjøre i 100 km/t.
 
