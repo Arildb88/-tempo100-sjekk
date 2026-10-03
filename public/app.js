@@ -1,3 +1,4 @@
+import { makePlateTracker } from './plate-reader.js';
 const form = document.querySelector('#lookup');
 const plate = document.querySelector('#plate');
 const submit = document.querySelector('#submit');
@@ -122,13 +123,13 @@ photo.addEventListener('change', () => readPlateImage(photo.files?.[0]));
 const cameraDialog = document.querySelector('#camera-dialog');
 const video = document.querySelector('#camera-video');
 const cameraMessage = document.querySelector('#camera-message');
-const captureButton = document.querySelector('#capture-plate');
+let cameraSession = 0;
 const zoom = document.querySelector('#camera-zoom');
 let cameraStream;
 let previousFocus;
 function stopCamera() {
   cameraStream?.getTracks().forEach(track => track.stop());
-  cameraStream = null; video.srcObject = null; captureButton.disabled = true;
+  cameraSession++; cameraStream = null; video.srcObject = null;
 }
 function closeCamera() {
   stopCamera(); if (cameraDialog.open) cameraDialog.close(); previousFocus?.focus();
@@ -143,13 +144,13 @@ document.querySelector('#open-camera').addEventListener('click', async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
     if (!cameraDialog.open) { stream.getTracks().forEach(track => track.stop()); return; }
     cameraStream = stream; video.srcObject = stream; await video.play();
-    if (video.videoWidth) { captureButton.disabled = false; cameraMessage.hidden = true; }
+    startAutomaticScan(cameraSession);
   } catch (failure) {
     stopCamera();
     cameraMessage.textContent = failure.name === 'NotAllowedError' ? 'Kameratilgang ble ikke gitt. Du kan bruke et bilde i stedet.' : failure.message || 'Kunne ikke starte kameraet.';
   }
 });
-video.addEventListener('loadedmetadata', () => { if (cameraDialog.open && cameraStream) { captureButton.disabled = false; cameraMessage.hidden = true; } });
+
 document.querySelector('#close-camera').addEventListener('click', closeCamera);
 cameraDialog.addEventListener('cancel', () => stopCamera());
 cameraDialog.addEventListener('close', stopCamera);
@@ -160,19 +161,48 @@ zoom.addEventListener('input', () => {
   document.querySelector('#zoom-value').value = `${Number(zoom.value).toFixed(1)}×`;
 });
 document.querySelector('#choose-photo').addEventListener('click', () => { closeCamera(); photo.click(); });
-captureButton.addEventListener('click', async () => {
-  if (!cameraStream || !video.videoWidth) return;
-  captureButton.disabled = true;
+function captureCameraFrame() {
   const stage = document.querySelector('.camera-stage');
   const targetRatio = stage.clientWidth / stage.clientHeight;
   let width = video.videoWidth, height = video.videoHeight;
   if (width / height > targetRatio) width = height * targetRatio; else height = width / targetRatio;
   width /= Number(zoom.value); height /= Number(zoom.value);
   const canvas = document.createElement('canvas');
-  const ratio = Math.min(1, 1800 / Math.max(width, height));
+  const ratio = Math.min(1, 1600 / Math.max(width, height));
   canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio);
   canvas.getContext('2d').drawImage(video, (video.videoWidth-width)/2, (video.videoHeight-height)/2, width, height, 0, 0, canvas.width, canvas.height);
-  const image = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.95));
-  closeCamera();
-  if (image) await readPlateImage(image); else scanStatus.textContent = 'Kunne ikke ta bilde. Prøv igjen.';
-});
+  return canvas;
+}
+async function startAutomaticScan(session) {
+  let worker;
+  const active = () => cameraDialog.open && cameraStream && cameraSession === session;
+  const trackPlate = makePlateTracker();
+  try {
+    cameraMessage.hidden = false;
+    cameraMessage.textContent = 'Laster skiltleser …';
+    const engine = await loadOCR();
+    if (!active()) return;
+    worker = await engine.createWorker('eng', 1);
+    if (!active()) return;
+    await worker.setParameters({ tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ', tessedit_pageseg_mode: '11' });
+    while (active()) {
+      cameraMessage.textContent = 'Leter etter skilt …';
+      if (video.videoWidth && video.videoHeight) {
+        const { data } = await worker.recognize(captureCameraFrame());
+        if (!active()) break;
+        const found = trackPlate(data.text, data.confidence);
+        if (found) {
+          plate.value = found;
+          scanStatus.textContent = `Automatisk lest: ${found}. Kontroller at nummeret stemmer.`;
+          candidates.replaceChildren();
+          closeCamera();
+          if (mode && !submit.disabled) form.requestSubmit();
+          break;
+        }
+      }
+      await new Promise(resolve => setTimeout(resolve, 700));
+    }
+  } catch {
+    if (active()) { cameraMessage.textContent = 'Skiltleseren kunne ikke startes. Prøv igjen eller bruk et bilde.'; stopCamera(); }
+  } finally { if (worker) await worker.terminate().catch(() => {}); }
+}

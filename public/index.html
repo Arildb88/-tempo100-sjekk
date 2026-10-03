@@ -5,7 +5,7 @@
   <meta name="theme-color" content="#123b37">
   <title>Tempo 100 Sjekk</title>
   <link rel="icon" href="/icon.svg"><link rel="manifest" href="/manifest.webmanifest">
-  <link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script>
+  <link rel="stylesheet" href="/style.css"><script src="/app.js" type="module"></script>
 </head>
 <body>
   <header><a class="brand" href="/"><span class="logo">100</span> Tempo Sjekk</a><span class="tag">Norske tilhengere</span></header>
@@ -29,10 +29,10 @@
     <div class="camera-stage"><video id="camera-video" autoplay muted playsinline></video><div class="camera-guide" aria-hidden="true"></div><p id="camera-message" role="status">Starter kamera …</p></div>
     <label class="zoom-label" for="camera-zoom">Zoom <output id="zoom-value">1×</output></label><input id="camera-zoom" type="range" min="1" max="3" step="0.1" value="1">
     <aside class="ad-banner camera-ad" aria-label="Annonseplass"><span>ANNONSE</span><strong>Din annonse her</strong><small>Plass for en sponsor</small></aside>
-    <p class="camera-hint">Sikt mot hengerens skilt</p>
-    <button id="capture-plate" type="button" disabled>Les skilt</button>
+    <p class="camera-hint">Hold hengerens skilt synlig i kameraet</p>
+    <p class="camera-auto-note">Leser automatisk når skiltet er tydelig</p>
     <button id="choose-photo" type="button">Bruk et bilde i stedet</button>
   </dialog>
-  <footer>Registerstatus for hengeren. Bruk kameraet når du står parkert.</footer>
+  <footer>Registerstatus for hengeren. For passasjer eller bruk mens bilen står parkert.</footer>
 </body>
 </html>

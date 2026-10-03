@@ -84,3 +84,7 @@ Les skilt med kamera åpner mobilens kamerabildevalg. Et stillbilde leses med Te
 ### Direkte kamera og annonseplass
 
 Kameraknappen åpner nå en direkte forhåndsvisning med bakre kamera, digital zoom og knapp for å lese et stillbilde. Kameraet stoppes ved lukking eller når siden skjules. Ingen kontinuerlig OCR eller videoopptak utføres. Kameratilgang krever HTTPS eller localhost. Bildevalg er tilgjengelig som alternativ. Hovedsiden og kameravisningen har en merket annonseplass uten aktivt annonsenettverk, sporingsskript eller reelle annonser.
+
+### Automatisk skiltlesing
+
+Direktekameravisningen analyserer nå kamerarammer fortløpende. Ett entydig norsk skilt med OCR-konfidens minst 70 må leses likt tre ganger på rad før nummeret fylles inn og oppslaget startes automatisk. Ingen Les skilt-knapp eller bildebekreftelse er nødvendig i direktekameramodus. Kameraet stopper etter funn. Ulike eller flere skilt gir ingen automatisk treff. OCR-konfidens er ikke en garanti for at nummeret er riktig, og resultatet viser alltid nummeret. Ytelse og presisjon ved bevegelse må prøves på reell mobil. Brukes av passasjer eller mens bilen er parkert. Bildevalgalternativet har fortsatt manuell nummerbekreftelse.
