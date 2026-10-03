@@ -97,3 +97,20 @@ test('missing API key and rate limiting are explicit', async t => {
   assert.equal((await post('AB1234')).status, 503);
   assert.equal((await post('AB1234')).status, 429);
 });
+test('configured sponsor is public while the API key stays private', async t => {
+  const { origin } = await running(t, { mode: 'live', apiKey: 'private-secret', adText: 'Eksempelpartner', adUrl: 'https://example.com/' });
+  const config = await (await fetch(`${origin}/api/config`)).json();
+  assert.deepEqual(config.sponsor, { text: 'Eksempelpartner', url: 'https://example.com/' });
+  assert.equal(JSON.stringify(config).includes('private-secret'), false);
+  assert.equal((await fetch(origin)).headers.get('permissions-policy'), 'camera=(self), microphone=(), geolocation=()');
+  assert.throws(() => makeServer({ adText: 'Utrygt', adUrl: 'javascript:alert(1)' }));
+});
+test('cross-site requests are denied and a daily budget limits live API calls', async t => {
+  let calls = 0;
+  const { origin, post } = await running(t, { mode: 'live', apiKey: 'secret', dailyLimit: 1, fetchImpl: async () => { calls++; return Response.json({ kjoretoydataListe: [demoVehicle('DEMO100')] }); } });
+  const otherSite = await fetch(`${origin}/api/lookup`, { method: 'POST', headers: { Origin: 'https://other.example', 'Content-Type': 'application/json' }, body: JSON.stringify({ plate: 'AB1234' }) });
+  assert.equal(otherSite.status, 403);
+  assert.equal((await post('AB1234')).status, 200);
+  assert.equal((await post('AB1234')).status, 429);
+  assert.equal(calls, 1);
+});
