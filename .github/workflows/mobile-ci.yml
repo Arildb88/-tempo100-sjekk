@@ -1,0 +1,33 @@
+name: Flutter mobile
+
+on:
+  push:
+    paths:
+      - 'mobile/**'
+      - '.github/workflows/mobile-ci.yml'
+  pull_request:
+    paths:
+      - 'mobile/**'
+      - '.github/workflows/mobile-ci.yml'
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Generate Flutter Android platform
+        working-directory: mobile
+        run: flutter create --platforms=android --org no.arildb --project-name tempo100 --no-pub .
+      - name: Configure platform
+        working-directory: mobile
+        run: dart tool/setup_platforms.dart
+      - name: Install and verify
+        working-directory: mobile
+        run: |
+          flutter pub get
+          flutter analyze
+          flutter test
+          flutter build apk --debug

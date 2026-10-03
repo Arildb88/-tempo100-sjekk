@@ -5,3 +5,10 @@ node_modules/
 coverage/
 *.log
 .DS_Store
+mobile/.dart_tool/
+mobile/.flutter-plugins-dependencies
+mobile/.metadata
+mobile/build/
+mobile/android/.gradle/
+mobile/ios/Pods/
+mobile/ios/.symlinks/
