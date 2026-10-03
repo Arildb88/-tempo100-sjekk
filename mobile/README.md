@@ -2,6 +2,8 @@
 
 Flutter-klient for den eksisterende Node-serveren i repoets rot. Vegvesenets API-nøkkel skal bare ligge på serveren. Appen gjør oppslag med `POST /api/lookup`, leser skilt lokalt med kamera/ML Kit og viser et AdMob-banner på hovedsiden etter samtykkekontroll.
 
+Kameraet leser skiltet automatisk når samme entydige registreringsnummer er gjenkjent i to påfølgende analyser. Analysene begrenses til omtrent én per 300 ms og kjøres ikke samtidig. Kontroller alltid nummeret som vises i resultatet; raskere lesing kan gi flere feiltolkninger. Fokus på et tilkoblet PC-webkamera styres av kameraet/emulatoren og kan fortsatt bruke tid.
+
 ## Oppsett på PC-en din
 
 Bruk Flutter 3.47 eller nyere. I PowerShell fra `mobile`:

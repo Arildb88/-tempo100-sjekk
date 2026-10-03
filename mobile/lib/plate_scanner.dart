@@ -86,7 +86,7 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
   }
 
   Future<void> _scan(CameraImage frame) async {
-    if (!mounted || _busy || _found || DateTime.now().difference(_lastFrame).inMilliseconds < 500) return;
+    if (!mounted || _busy || _found || DateTime.now().difference(_lastFrame).inMilliseconds < 300) return;
     final input = _convert(frame);
     if (input == null) return;
     _busy = true;

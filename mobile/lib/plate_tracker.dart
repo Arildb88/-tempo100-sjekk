@@ -12,7 +12,7 @@ class PlateTracker {
     final candidate = candidates.single;
     _count = candidate == _last ? _count + 1 : 1;
     _last = candidate;
-    return _count >= 3 ? candidate : null;
+    return _count >= 2 ? candidate : null;
   }
 
   void reset() { _last = null; _count = 0; }
