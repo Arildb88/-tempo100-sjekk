@@ -31,3 +31,9 @@ jobs:
           flutter analyze
           flutter test
           flutter build apk --debug
+      - name: Upload Android test APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: tempo100-android-debug
+          path: mobile/build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
