@@ -16,6 +16,8 @@ flutter analyze
 flutter test
 ```
 
+`pubspec.lock` er sjekket inn. Bruk `flutter pub upgrade` bare når avhengighetene skal oppdateres med vilje, og sjekk inn den nye låsefilen etter analyse og test.
+
 Dette lager de vanlige Android- og iOS-filene og setter inn appnavn, kameratillatelse og de to AdMob-app-ID-ene fra skjermbildene. `setup_platforms.dart` kan kjøres igjen etter regenerering. Hvis Flutter bare genererer Android-filer på PC-en din, lager du også iOS-plattformen senere på Mac og kjører oppsettet på nytt. Flutter og Dart er ikke installert i dette arbeidsmiljøet. GitHub Actions bygger og tester Android debug-APK, mens iOS-bygg krever macOS/Xcode.
 
 Start serveren i repoets rot med `.env` for demomodus eller live-modus. For Android-emulatoren brukes `http://10.0.2.2:3000` automatisk i debug. På en fysisk telefon må serveren være tilgjengelig på nettverket eller over HTTPS. For eksempel:

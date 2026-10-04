@@ -28,7 +28,7 @@ jobs:
       - name: Install and verify
         working-directory: mobile
         run: |
-          flutter pub upgrade
+          flutter pub get --enforce-lockfile
           flutter pub outdated
           flutter analyze
           flutter test
