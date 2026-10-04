@@ -18,6 +18,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: '3.47.4'
       - name: Generate Flutter Android platform
         working-directory: mobile
         run: flutter create --platforms=android --org no.arildb --project-name tempo100 --no-pub .
@@ -28,9 +29,17 @@ jobs:
         working-directory: mobile
         run: |
           flutter pub get
+          flutter pub outdated
           flutter analyze
           flutter test
           flutter build apk --debug
+      - name: Upload resolved Flutter dependencies
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tempo100-pubspec-lock
+          path: mobile/pubspec.lock
+          if-no-files-found: warn
       - name: Upload Android test APK
         uses: actions/upload-artifact@v4
         with:

@@ -2,9 +2,9 @@
 
 En mobiltilpasset norsk webapp som slår opp tilhengerens registreringsnummer og undersøker om **teknisk underkode `TEMPO100`** finnes i Statens vegvesens registerdata.
 
-**Navn for iOS og Android:** Tempo 100. Flutter-kildekoden ligger i [`mobile/`](mobile/README.md) og bruker samme server for oppslag. Plattformfiler genereres med Flutter på utviklingsmaskinen; en mobilbygging er ennå ikke verifisert.
+**Navn for iOS og Android:** Tempo 100. Flutter-kildekoden ligger i [`mobile/`](mobile/README.md) og bruker samme server for oppslag. Plattformfiler genereres med Flutter på utviklingsmaskinen; Android debug-APK bygges og testes i GitHub Actions.
 
-**Status: testversjon.** Kodeverket og API-strukturen er undersøkt. Eieren har bekreftet at et lokalt live-oppslag fungerer, men resultatet er ikke kontrollert mot en kjent Tempo 100-godkjent henger. Demoen bruker utelukkende fiktive data. Appen avgjør ikke om en konkret bil/henger-kombinasjon har lov til å kjøre i 100 km/t.
+**Status: testversjon.** Eieren har bekreftet live-oppslag med både godkjent og ikke godkjent tilhenger og testet kameraavlesning via Android-emulator. Demoen bruker utelukkende fiktive data. Appen avgjør ikke om en konkret bil/henger-kombinasjon har lov til å kjøre i 100 km/t.
 
 ## Start lokalt
 
@@ -78,7 +78,7 @@ Teksten er begrenset til 90 tegn og lenken må bruke HTTPS. Banneret skjules nå
 
 Ingen database, analyseverktøy eller oppslagshistorikk er inkludert. Serveren logger ikke registreringsnumre eller rådata. Registreringsnummeret sendes til Statens vegvesen ved ekte oppslag og regnes som en personopplysning. Før offentlig lansering: avklar behandlingsgrunnlag, publiser personverntekst og sjekk vilkårene for viderebruk av API-data; kontroller også hostingens/proxyens logger. Bruk HTTPS med fungerende kameratilgang. Ratebegrensningen er per tilkoblings-IP i én serverprosess og stoler ikke på klientens X-Forwarded-For. `MAX_DAILY_LOOKUPS` begrenser antall live-oppslag per UTC-døgn i samme prosess (standard 50 000). Telleverket lagres bare i minnet og deles ikke mellom instanser eller omstarter; bruk ekstern kvote/ratebegrensning ved større offentlig drift.
 
-Vis et resultat fra en kjent Tempo 100-godkjent henger og sammenlign det med vognkort/godkjenningsattest, også for en ordinær henger. Prøv kamera/OCR på mobil i realistiske forhold før utgivelse. Grønn status gjelder bare registrert godkjenning for **hengeren**. Appen avgjør ikke om kjøringen er lovlig, og resultatet er ikke bevis for å anklage en annen trafikant.
+Sammenlign et resultat fra en kjent Tempo 100-godkjent henger og en ordinær henger med vognkort/godkjenningsattest. Prøv kamera/OCR på en fysisk mobil i realistiske forhold før utgivelse. Grønn status gjelder bare registrert godkjenning for **hengeren**. Appen avgjør ikke om kjøringen er lovlig, og resultatet er ikke bevis for å anklage en annen trafikant.
 
 ## Kilder
 
