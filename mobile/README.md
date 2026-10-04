@@ -10,13 +10,14 @@ CI bruker Flutter 3.47.4. På PC-en kan du oppdatere stabil kanal med `flutter c
 
 ```powershell
 flutter create --platforms=android,ios --org no.arildb --project-name tempo100 .
+git restore -- pubspec.yaml
 dart tool/setup_platforms.dart
 flutter pub get
 flutter analyze
 flutter test
 ```
 
-`pubspec.lock` er sjekket inn. Bruk `flutter pub upgrade` bare når avhengighetene skal oppdateres med vilje, og sjekk inn den nye låsefilen etter analyse og test.
+`flutter create` kan overskrive `pubspec.yaml` med en standardmal; `git restore` henter prosjektets avhengighetsliste tilbake. Kjør kommandoen bare når du ikke har egne, ulagrede endringer i denne filen. `pubspec.lock` er sjekket inn. Bruk `flutter pub upgrade` bare når avhengighetene skal oppdateres med vilje, og sjekk inn den nye låsefilen etter analyse og test.
 
 Dette lager de vanlige Android- og iOS-filene og setter inn appnavn, kameratillatelse og de to AdMob-app-ID-ene fra skjermbildene. `setup_platforms.dart` kan kjøres igjen etter regenerering. Hvis Flutter bare genererer Android-filer på PC-en din, lager du også iOS-plattformen senere på Mac og kjører oppsettet på nytt. Flutter og Dart er ikke installert i dette arbeidsmiljøet. GitHub Actions bygger og tester Android debug-APK, mens iOS-bygg krever macOS/Xcode.
 
