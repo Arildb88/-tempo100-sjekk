@@ -23,7 +23,7 @@ jobs:
         working-directory: mobile
         run: |
           flutter create --platforms=android --org no.arildb --project-name tempo100 --no-pub .
-          git restore -- pubspec.yaml
+          git restore -- pubspec.yaml pubspec.lock
       - name: Configure platform
         working-directory: mobile
         run: dart tool/setup_platforms.dart
