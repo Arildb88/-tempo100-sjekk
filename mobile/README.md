@@ -39,7 +39,7 @@ Bruk følgende opplysninger når appen opprettes i Play Console:
 - Pakkenavn/application ID: `no.tempo100.app` (genereres av `--org no.tempo100 --project-name app`)
 - Standardspråk for butikkoppføringen: Norsk (`no`)
 
-Standardspråket velges i Play Console. Det er ikke satt av Flutter-prosjektet. Android- og iOS-ikonnavnet settes til appnavnet i `tool/setup_platforms.dart`.
+Standardspråket velges i Play Console. Det er ikke satt av Flutter-prosjektet. Appens visningsnavn for Android og iOS settes til appnavnet i `tool/setup_platforms.dart`.
 
 ## Annonser
 
