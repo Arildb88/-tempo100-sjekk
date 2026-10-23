@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'ad_banner.dart';
 import 'lookup_api.dart';
-import 'plate_scanner.dart';
+import 'plate_scanner.dart';\nimport 'privacy_policy.dart';
 
 void main() => runApp(const Tempo100App());
 
@@ -138,7 +138,7 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(height: 24),
         const Text('Kontroller opplysninger og skilt. Resultatet gjelder hengerens registerstatus, ikke om den aktuelle kjøringen er lovlig. For passasjer eller når bilen står parkert.', style: TextStyle(fontSize: 12, color: Color(0xFF556B61))),
       ])),
-      const ConsentBanner(),
+      const ConsentBanner(),\n      TextButton(\n        onPressed: () => Navigator.of(context).push<void>(MaterialPageRoute<void>(builder: (_) => const PrivacyPolicyPage())),\n        child: const Text('Personvern'),\n      ),
     ])),
   );
 }
