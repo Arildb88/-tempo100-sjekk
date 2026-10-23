@@ -31,7 +31,17 @@ For lokal test mot en PC på samme nett, sett `HOST=0.0.0.0` på serveren og bru
 
 Under **Actions → Flutter mobile** i GitHub kan du laste ned `tempo100-android-debug` fra en vellykket kjøring og pakke ut APK-en. Dette er en debug-signert testversjon for direkte installasjon; den er ikke en Play Store-pakke.
 
-## Google Play-identitet\n\nBruk følgende opplysninger når appen opprettes i Play Console:\n\n- Appnavn: `Tempo 100 - Tilhengersjekk`\n- Pakkenavn/application ID: `no.tempo100.app` (genereres av `--org no.tempo100 --project-name app`)\n- Standardspråk for butikkoppføringen: Norsk (`no`)\n\nStandardspråket velges i Play Console. Det er ikke satt av Flutter-prosjektet. Android- og iOS-ikonnavnet settes til appnavnet i `tool/setup_platforms.dart`.\n\n## Annonser
+## Google Play-identitet
+
+Bruk følgende opplysninger når appen opprettes i Play Console:
+
+- Appnavn: `Tempo 100 - Tilhengersjekk`
+- Pakkenavn/application ID: `no.tempo100.app` (genereres av `--org no.tempo100 --project-name app`)
+- Standardspråk for butikkoppføringen: Norsk (`no`)
+
+Standardspråket velges i Play Console. Det er ikke satt av Flutter-prosjektet. Android- og iOS-ikonnavnet settes til appnavnet i `tool/setup_platforms.dart`.
+
+## Annonser
 
 Android-app-ID og iOS-app-ID ligger i de genererte native-filene etter oppsett. Banner-ID-ene fra AdMob ligger i `lib/ad_banner.dart`. Debug bruker **Googles testannonseenheter**; release bruker dine egne banner-ID-er. Appen ber om oppdatert samtykkestatus ved start, viser eventuelt Googles UMP-skjema og laster bare annonse hvis `canRequestAds()` er sant. Opprett og publiser riktig melding i AdMob «Personvern og meldinger» før ekte annonser og offentlig utgivelse. Test personvernvalg på begge plattformer. Annonsen vises ikke over kamerabildet.
 
