@@ -32,7 +32,7 @@ void main() {
   });
   if (Directory('ios').existsSync()) {
   update('ios/Runner/Info.plist', (xml) {
-    xml = xml.replaceFirst(RegExp(r'(<key>CFBundleDisplayName</key>\\s*<string>)[^<]*(</string>)'), r'\$1Tempo 100 - Tilhengersjekk\$2');
+    xml = xml.replaceFirst(RegExp(r'(<key>CFBundleDisplayName</key>\s*<string>)[^<]*(</string>)'), r'$1Tempo 100 - Tilhengersjekk$2');
     if (!xml.contains('NSCameraUsageDescription')) {
       xml = xml.replaceFirst('</dict>\n</plist>',
           '  <key>NSCameraUsageDescription</key>\n'
