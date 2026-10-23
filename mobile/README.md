@@ -9,7 +9,7 @@ Kameraet leser skiltet automatisk når samme entydige registreringsnummer er gje
 CI bruker Flutter 3.47.4. På PC-en kan du oppdatere stabil kanal med `flutter channel stable` og `flutter upgrade`, og kontrollere versjonen med `flutter --version`. I PowerShell fra `mobile`:
 
 ```powershell
-flutter create --platforms=android,ios --org no.arildb --project-name tempo100 .
+flutter create --platforms=android,ios --org no.tempo100 --project-name app .
 git restore -- pubspec.yaml pubspec.lock
 dart tool/setup_platforms.dart
 flutter pub get
@@ -31,7 +31,7 @@ For lokal test mot en PC på samme nett, sett `HOST=0.0.0.0` på serveren og bru
 
 Under **Actions → Flutter mobile** i GitHub kan du laste ned `tempo100-android-debug` fra en vellykket kjøring og pakke ut APK-en. Dette er en debug-signert testversjon for direkte installasjon; den er ikke en Play Store-pakke.
 
-## Annonser
+## Google Play-identitet\n\nBruk følgende opplysninger når appen opprettes i Play Console:\n\n- Appnavn: `Tempo 100 - Tilhengersjekk`\n- Pakkenavn/application ID: `no.tempo100.app` (genereres av `--org no.tempo100 --project-name app`)\n- Standardspråk for butikkoppføringen: Norsk (`no`)\n\nStandardspråket velges i Play Console. Det er ikke satt av Flutter-prosjektet. Android- og iOS-ikonnavnet settes til appnavnet i `tool/setup_platforms.dart`.\n\n## Annonser
 
 Android-app-ID og iOS-app-ID ligger i de genererte native-filene etter oppsett. Banner-ID-ene fra AdMob ligger i `lib/ad_banner.dart`. Debug bruker **Googles testannonseenheter**; release bruker dine egne banner-ID-er. Appen ber om oppdatert samtykkestatus ved start, viser eventuelt Googles UMP-skjema og laster bare annonse hvis `canRequestAds()` er sant. Opprett og publiser riktig melding i AdMob «Personvern og meldinger» før ekte annonser og offentlig utgivelse. Test personvernvalg på begge plattformer. Annonsen vises ikke over kamerabildet.
 
