@@ -2,7 +2,7 @@
 
 En mobiltilpasset norsk webapp som slår opp tilhengerens registreringsnummer og undersøker om **teknisk underkode `TEMPO100`** finnes i Statens vegvesens registerdata.
 
-**Navn for iOS og Android:** Tempo 100. Flutter-kildekoden ligger i [`mobile/`](mobile/README.md) og bruker samme server for oppslag. Plattformfiler genereres med Flutter på utviklingsmaskinen; Android debug-APK bygges og testes i GitHub Actions.
+**Navn for iOS og Android:** Tempo 100 - Tilhengersjekk. Flutter-kildekoden ligger i [`mobile/`](mobile/README.md) og bruker samme server for oppslag. Plattformfiler genereres med Flutter på utviklingsmaskinen; Android debug-APK bygges og testes i GitHub Actions.
 
 **Status: testversjon.** Eieren har bekreftet live-oppslag med både godkjent og ikke godkjent tilhenger og testet kameraavlesning via Android-emulator. Demoen bruker utelukkende fiktive data. Appen avgjør ikke om en konkret bil/henger-kombinasjon har lov til å kjøre i 100 km/t.
 
@@ -44,7 +44,7 @@ Bilens ABS, egenvekt, totalvekt, tilhengerens utstyr, attestens krav, dekkenes a
 - `src/server.js`: HTTP-server, ruter, statiske filer, ratebegrensning.
 - `src/provider.js`: Vegvesen-kall og fiktive demodata.
 - `src/vehicle.js`: registerstatus og EU-kontrollfrist.
-- `public/`: norsk brukergrensesnitt og mobilmanifest.
+- `public/`: norsk brukergrensesnitt, personvernerklæring (`/privacy`) og mobilmanifest.
 - `test/`: tester for manglende/motstridende data, API-feil, statuslogikk og HTTP.
 - `docs/data-contract.md`: dokumenterte felter, kilder og gjenværende validering.
 - `.github/workflows/ci.yml`: syntakssjekk og tester ved push/PR.
@@ -76,7 +76,7 @@ Teksten er begrenset til 90 tegn og lenken må bruke HTTPS. Banneret skjules nå
 
 ## Publisering og personvern
 
-Ingen database, analyseverktøy eller oppslagshistorikk er inkludert. Serveren logger ikke registreringsnumre eller rådata. Registreringsnummeret sendes til Statens vegvesen ved ekte oppslag og regnes som en personopplysning. Før offentlig lansering: avklar behandlingsgrunnlag, publiser personverntekst og sjekk vilkårene for viderebruk av API-data; kontroller også hostingens/proxyens logger. Bruk HTTPS med fungerende kameratilgang. Ratebegrensningen er per tilkoblings-IP i én serverprosess og stoler ikke på klientens X-Forwarded-For. `MAX_DAILY_LOOKUPS` begrenser antall live-oppslag per UTC-døgn i samme prosess (standard 50 000). Telleverket lagres bare i minnet og deles ikke mellom instanser eller omstarter; bruk ekstern kvote/ratebegrensning ved større offentlig drift.
+Ingen database, analyseverktøy eller oppslagshistorikk er inkludert. Serveren logger ikke registreringsnumre eller rådata. Personvernerklæringen for appen ligger på `/privacy` og er også tilgjengelig fra appens startskjerm. Registreringsnummeret sendes til Statens vegvesen ved ekte oppslag og regnes som en personopplysning. Før offentlig lansering: avklar behandlingsgrunnlag, publiser personverntekst og sjekk vilkårene for viderebruk av API-data; kontroller også hostingens/proxyens logger. Bruk HTTPS med fungerende kameratilgang. Ratebegrensningen er per tilkoblings-IP i én serverprosess og stoler ikke på klientens X-Forwarded-For. `MAX_DAILY_LOOKUPS` begrenser antall live-oppslag per UTC-døgn i samme prosess (standard 50 000). Telleverket lagres bare i minnet og deles ikke mellom instanser eller omstarter; bruk ekstern kvote/ratebegrensning ved større offentlig drift.
 
 Sammenlign et resultat fra en kjent Tempo 100-godkjent henger og en ordinær henger med vognkort/godkjenningsattest. Prøv kamera/OCR på en fysisk mobil i realistiske forhold før utgivelse. Grønn status gjelder bare registrert godkjenning for **hengeren**. Appen avgjør ikke om kjøringen er lovlig, og resultatet er ikke bevis for å anklage en annen trafikant.
 
