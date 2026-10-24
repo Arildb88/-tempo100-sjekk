@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import '../lib/app_localizations.dart';
-import '../lib/plate_input.dart';
+import 'package:tempo100/app_localizations.dart';
+import 'package:tempo100/plate_input.dart';
 
 void main() {
   group('spoken registration number', () {
