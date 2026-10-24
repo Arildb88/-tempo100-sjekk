@@ -62,10 +62,12 @@ void main() {
       );
     }
     if (!xml.contains('android.speech.RecognitionService')) {
-      xml = xml.replaceFirst(
-        '<application',
-        '<queries>\n        <intent>\n            <action android:name="android.speech.RecognitionService"/>\n        </intent>\n    </queries>\n    <application',
-      );
+      const speechQuery = '<intent>\n            <action android:name="android.speech.RecognitionService"/>\n        </intent>\n    ';
+      if (xml.contains('<queries>')) {
+        xml = xml.replaceFirst('<queries>', '<queries>\n        $speechQuery');
+      } else {
+        xml = xml.replaceFirst('<application', '<queries>\n        $speechQuery</queries>\n    <application');
+      }
     }
     xml = xml.replaceFirst(RegExp(r'android:label="[^"]*"'), 'android:label="Tempo 100 - Tilhengersjekk"');
     if (!xml.contains('com.google.android.gms.ads.APPLICATION_ID')) {
