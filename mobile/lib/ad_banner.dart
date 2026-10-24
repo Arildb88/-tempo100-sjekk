@@ -31,17 +31,25 @@ class _ConsentBannerState extends State<ConsentBanner> {
   }
 
   void _requestConsent() {
-    ConsentInformation.instance.requestConsentInfoUpdate(
-      ConsentRequestParameters(),
-      () async {
-        final required = await ConsentInformation.instance
-            .getPrivacyOptionsRequirementStatus() == PrivacyOptionsRequirementStatus.required;
-        if (mounted) setState(() => _showPrivacyOptions = required);
-        ConsentForm.loadAndShowConsentFormIfRequired((_) => _loadIfAllowed());
-        _loadIfAllowed(); // Previous session's consent may already allow ads.
-      },
-      (_) => _loadIfAllowed(),
-    );
+    try {
+      ConsentInformation.instance.requestConsentInfoUpdate(
+        ConsentRequestParameters(),
+        () async {
+          try {
+            final required = await ConsentInformation.instance
+                .getPrivacyOptionsRequirementStatus() == PrivacyOptionsRequirementStatus.required;
+            if (mounted) setState(() => _showPrivacyOptions = required);
+            ConsentForm.loadAndShowConsentFormIfRequired((_) => _loadIfAllowed());
+            _loadIfAllowed(); // Previous session's consent may already allow ads.
+          } catch (_) {
+            // Consent and ads are optional; an SDK error must not affect app startup.
+          }
+        },
+        (_) => _loadIfAllowed(),
+      );
+    } catch (_) {
+      // Consent and ads are optional; an SDK error must not affect app startup.
+    }
   }
 
   Future<void> _loadIfAllowed() async {
