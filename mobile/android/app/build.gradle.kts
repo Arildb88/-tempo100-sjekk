@@ -1,4 +1,3 @@
-import com.android.build.api.dsl.ApplicationExtension
 import java.util.Properties
 
 plugins {
@@ -13,7 +12,7 @@ if (keystorePropertiesFile.exists()) {
     keystorePropertiesFile.inputStream().use { keystoreProperties.load(it) }
 }
 
-extensions.configure<ApplicationExtension>("android") {
+android {
     namespace = "no.tempo100.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
