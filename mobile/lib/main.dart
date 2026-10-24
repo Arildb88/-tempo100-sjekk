@@ -136,7 +136,7 @@ class _HomePageState extends State<HomePage> {
         onResult: (result) {
           if (!mounted || !result.finalResult) return;
           final plate = normalizeSpokenPlate(result.recognizedWords);
-          if (!RegExp(r'^[A-ZÆØÅ0-9]{2,7}$').hasMatch(plate)) {
+          if (!isValidSpokenPlate(plate)) {
             setState(() {
               _listening = false;
               _error = 'Kunne ikke tolke skiltet. Prøv å si bokstavene og tallene tydelig, eller skriv det inn.';
