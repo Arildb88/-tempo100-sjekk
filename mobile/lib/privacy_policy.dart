@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 
+import 'app_localizations.dart';
+
 class PrivacyPolicyPage extends StatelessWidget {
   const PrivacyPolicyPage({super.key});
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Personvern')),
+    appBar: AppBar(title: Text(tr(context, 'Personvernerklæring'))),
     body: ListView(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-      children: const [
-        Text('Personvernerklæring for Tempo 100 - Tilhengersjekk',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+      children: [
+        Text(tr(context, 'Personvernerklæring for Tempo 100 - Tilhengersjekk'),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         SizedBox(height: 8),
-        Text('Sist oppdatert: 23. oktober 2026'),
+        Text(tr(context, 'Sist oppdatert: 24. oktober 2026')),
         SizedBox(height: 18),
         _PolicySection('Hvem er ansvarlig?',
             'Denne erklæringen gjelder Tempo 100 - Tilhengersjekk for Android og iOS. Utvikleren som er oppført under appens utviklerinformasjon i Google Play, er ansvarlig for behandlingen. Spørsmål, innsyns- og sletteforespørsler kan sendes til e-postadressen under «Kontakt utvikler» i Google Play-oppføringen.'),
@@ -20,6 +22,8 @@ class PrivacyPolicyPage extends StatelessWidget {
             'Nummeret du skriver inn eller leser med kamera, sendes til appens server for oppslag. Registreringsnummer regnes som en personopplysning. I live-modus videresender serveren nummeret til Statens vegvesens API, som returnerer tekniske kjøretøyopplysninger uten navn eller kontaktopplysninger om eieren. Nummeret sendes ikke til Googles annonse-SDK.'),
         _PolicySection('Kamera',
             'Kamerarammer behandles på enheten med tekstgjenkjenning for å lese registreringsnummer. Appen tar ikke opp video, og bilder eller kamerarammer lastes ikke opp eller lagres av appen. Du kan også skrive nummeret manuelt.'),
+        _PolicySection('Talegjenkjenning',
+            'Du kan trykke på mikrofonknappen og si et registreringsnummer. Mikrofonen brukes bare mens talegjenkjenning er aktiv. Talegjenkjenning leveres av operativsystemet eller en talegjenkjenningstjeneste på enheten, og lyd kan bli behandlet av denne tjenesten i henhold til enhetens innstillinger og leverandørens vilkår. Appen lagrer ikke lydopptak eller taletranskripsjoner. Det gjenkjente registreringsnummeret fylles inn i skjemaet og sendes til appserveren når oppslaget utføres. Du kan alltid skrive nummeret manuelt.'),
         _PolicySection('Annonser og Google',
             'Appen bruker Google Mobile Ads SDK til bannerannonser og Googles UMP til samtykkevalg der dette kreves. Annonser forespørres bare når SDK-et oppgir at det er tillatt. Google Mobile Ads SDK kan samle inn og dele IP-adresse (som kan brukes til å anslå omtrentlig plassering), annonse- eller enhetsidentifikatorer, app- og annonseinteraksjoner samt diagnostikk- og ytelsesopplysninger for annonselevering, måling, diagnostikk og beskyttelse mot svindel. Hvilke annonser og behandlinger som brukes, avhenger blant annet av personvernvalgene dine og Googles innstillinger.'),
         _PolicySection('Andre mottakere',
@@ -46,9 +50,9 @@ class _PolicySection extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+        Text(tr(context, title), style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
         const SizedBox(height: 6),
-        Text(body),
+        Text(tr(context, body)),
       ],
     ),
   );
