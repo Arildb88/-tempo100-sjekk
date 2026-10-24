@@ -20,6 +20,7 @@ class _ConsentBannerState extends State<ConsentBanner> {
   BannerAd? _ad;
   bool _showPrivacyOptions = false;
   bool _requested = false;
+  bool _loadingAds = false;
 
   @override
   void initState() {
@@ -42,28 +43,36 @@ class _ConsentBannerState extends State<ConsentBanner> {
   }
 
   Future<void> _loadIfAllowed() async {
-    if (!mounted || _requested || !await ConsentInformation.instance.canRequestAds()) return;
-    _requested = true;
-    await MobileAds.instance.initialize();
-    if (!mounted) return;
-    // A compact 320×50 banner stays clear of the lookup and camera controls.
-    const size = AdSize.banner;
-    final id = Platform.isAndroid
-        ? (kReleaseMode ? _androidBanner : _androidTest)
-        : (kReleaseMode ? _iosBanner : _iosTest);
-    final ad = BannerAd(
-      adUnitId: id,
-      size: size,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (ad) {
-          if (!mounted) { ad.dispose(); return; }
-          setState(() => _ad = ad as BannerAd);
-        },
-        onAdFailedToLoad: (ad, _) => ad.dispose(),
-      ),
-    );
-    await ad.load();
+    if (!mounted || _requested || _loadingAds) return;
+    _loadingAds = true; // Both consent callbacks can complete before either await returns.
+    try {
+      if (!await ConsentInformation.instance.canRequestAds() || !mounted) return;
+      _requested = true;
+      await MobileAds.instance.initialize();
+      if (!mounted) return;
+      // A compact 320×50 banner stays clear of the lookup and camera controls.
+      const size = AdSize.banner;
+      final id = Platform.isAndroid
+          ? (kReleaseMode ? _androidBanner : _androidTest)
+          : (kReleaseMode ? _iosBanner : _iosTest);
+      final ad = BannerAd(
+        adUnitId: id,
+        size: size,
+        request: const AdRequest(),
+        listener: BannerAdListener(
+          onAdLoaded: (ad) {
+            if (!mounted) { ad.dispose(); return; }
+            setState(() => _ad = ad as BannerAd);
+          },
+          onAdFailedToLoad: (ad, _) => ad.dispose(),
+        ),
+      );
+      await ad.load();
+    } catch (_) {
+      _requested = false;
+    } finally {
+      _loadingAds = false;
+    }
   }
 
   @override

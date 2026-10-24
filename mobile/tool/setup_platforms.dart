@@ -1,4 +1,4 @@
-// Run after `flutter create --platforms=android,ios --org no.arildb --project-name tempo100 .`.
+// Run after `flutter create --platforms=android,ios --org no.tempo100 --project-name app .`.
 import 'dart:io';
 
 void update(String path, String Function(String) transform) {
@@ -55,7 +55,7 @@ void main() {
       xml = xml.replaceFirst('<application',
           '<uses-permission android:name="android.permission.CAMERA"/>\n    <uses-permission android:name="android.permission.INTERNET"/>\n    <application');
     }
-    xml = xml.replaceFirst(RegExp(r'android:label="[^"]*"'), 'android:label="Tempo 100"');
+    xml = xml.replaceFirst(RegExp(r'android:label="[^"]*"'), 'android:label="Tempo 100 - Tilhengersjekk"');
     if (!xml.contains('com.google.android.gms.ads.APPLICATION_ID')) {
       xml = xml.replaceFirst('<activity',
           '<meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-5656443533422331~3206856994"/>\n        <activity');
@@ -71,7 +71,7 @@ void main() {
   });
   if (Directory('ios').existsSync()) {
   update('ios/Runner/Info.plist', (xml) {
-    xml = xml.replaceFirst(r'<string>$(PRODUCT_NAME)</string>', '<string>Tempo 100</string>');
+    xml = xml.replaceFirst(RegExp(r'(<key>CFBundleDisplayName</key>\s*<string>)[^<]*(</string>)'), r'$1Tempo 100 - Tilhengersjekk$2');
     if (!xml.contains('NSCameraUsageDescription')) {
       xml = xml.replaceFirst('</dict>\n</plist>',
           '  <key>NSCameraUsageDescription</key>\n'

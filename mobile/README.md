@@ -6,17 +6,20 @@ Kameraet leser skiltet automatisk når samme entydige registreringsnummer er gje
 
 ## Oppsett på PC-en din
 
-Bruk Flutter 3.47 eller nyere. I PowerShell fra `mobile`:
+CI bruker Flutter 3.47.4. På PC-en kan du oppdatere stabil kanal med `flutter channel stable` og `flutter upgrade`, og kontrollere versjonen med `flutter --version`. I PowerShell fra `mobile`:
 
 ```powershell
-flutter create --platforms=android,ios --org no.arildb --project-name tempo100 .
+flutter create --platforms=android,ios --org no.tempo100 --project-name app .
+git restore -- pubspec.yaml pubspec.lock
 dart tool/setup_platforms.dart
 flutter pub get
 flutter analyze
 flutter test
 ```
 
-Dette lager de vanlige Android- og iOS-filene og setter inn appnavn, kameratillatelse og de to AdMob-app-ID-ene fra skjermbildene. `setup_platforms.dart` kan kjøres igjen etter regenerering. Hvis Flutter bare genererer Android-filer på PC-en din, lager du også iOS-plattformen senere på Mac og kjører oppsettet på nytt. Flutter og Dart var ikke installert i arbeidsmiljøet som laget kildekoden, så native bygg og test må utføres i CI eller på en maskin med Flutter. iOS-bygg krever macOS/Xcode.
+`flutter create` kan overskrive `pubspec.yaml` og `pubspec.lock` med en standardmal; `git restore` henter prosjektets avhengigheter tilbake. Kjør kommandoen bare når du ikke har egne, ulagrede endringer i disse filene. Bruk `flutter pub upgrade` bare når avhengighetene skal oppdateres med vilje, og sjekk inn den nye låsefilen etter analyse og test.
+
+Dette lager de vanlige Android- og iOS-filene og setter inn appnavn, kameratillatelse og de to AdMob-app-ID-ene fra skjermbildene. `setup_platforms.dart` kan kjøres igjen etter regenerering. Hvis Flutter bare genererer Android-filer på PC-en din, lager du også iOS-plattformen senere på Mac og kjører oppsettet på nytt. Flutter og Dart er ikke installert i dette arbeidsmiljøet. GitHub Actions bygger og tester Android debug-APK, mens iOS-bygg krever macOS/Xcode.
 
 Start serveren i repoets rot med `.env` for demomodus eller live-modus. For Android-emulatoren brukes `http://10.0.2.2:3000` automatisk i debug. På en fysisk telefon må serveren være tilgjengelig på nettverket eller over HTTPS. For eksempel:
 
@@ -27,6 +30,16 @@ flutter run --dart-define=API_BASE_URL=https://DIN-SERVER.NO
 For lokal test mot en PC på samme nett, sett `HOST=0.0.0.0` på serveren og bruk `http://PC-ENS-IP:3000` som `API_BASE_URL`. I debug-APK-en fra GitHub Actions kan du også åpne **Testserver (debug)** og skrive denne adressen i appen. Telefon og PC må være på samme nett, og brannmuren må slippe gjennom port 3000. Android tillater lokal HTTP bare i debug-konfigurasjonen. En iPhone bør testes mot HTTPS. En release-bygging avviser HTTP og trenger en reell HTTPS-server. Testsiden som tidligere ble publisert er en separat demo og fungerer ikke som live API-server for denne appen.
 
 Under **Actions → Flutter mobile** i GitHub kan du laste ned `tempo100-android-debug` fra en vellykket kjøring og pakke ut APK-en. Dette er en debug-signert testversjon for direkte installasjon; den er ikke en Play Store-pakke.
+
+## Google Play-identitet
+
+Bruk følgende opplysninger når appen opprettes i Play Console:
+
+- Appnavn: `Tempo 100 - Tilhengersjekk`
+- Pakkenavn/application ID: `no.tempo100.app` (genereres av `--org no.tempo100 --project-name app`)
+- Standardspråk for butikkoppføringen: Norsk (`no`)
+
+Standardspråket velges i Play Console. Det er ikke satt av Flutter-prosjektet. Appens visningsnavn for Android og iOS settes til appnavnet i `tool/setup_platforms.dart`.
 
 ## Annonser
 
@@ -54,9 +67,11 @@ Filen ligger i `build/app/outputs/bundle/release/app-release.aab`. Personvern-UR
 
 ## Før utgivelse
 
-- Bekreft et kjent Tempo 100-godkjent og et ikke godkjent registreringsnummer mot dokumentasjon fra Statens vegvesen.
-- Test kamera og automatisk avlesning på en fysisk Android og iPhone; OCR kan lese feil. Resultatkortet viser alltid nummeret som ble slått opp.
-- Sett opp HTTPS-hosting av Node-serveren med API-nøkkelen som serverhemmelighet. Personvernerklæringen serveres på `/personvern`.
-- Kontroller annonse/samtykke, butikkopplysninger og app-ikon før publisering. En lokal Flutter-kildekode er ikke en godkjent App Store- eller Play Store-utgivelse.
+- Live-oppslag med godkjent og ikke godkjent tilhenger er bekreftet av eieren. Sammenlign resultatene med vognkort/godkjenningsattest for konkrete kontrolltilfeller.
+- Test kamera og automatisk avlesning på en fysisk Android og iPhone i realistiske forhold; emulator/webkamera er testet. OCR kan lese feil. Resultatkortet viser alltid nummeret som ble slått opp.
+- Publiser Node-serveren på HTTPS, lagre Vegvesen-nøkkelen bare som serverhemmelighet og bygg release med `--dart-define=API_BASE_URL=https://DIN-SERVER.NO`. Uten denne adressen peker appen mot emulatorens lokale testserver.
+- Legg en varig kvote/ratebegrensning foran live-oppslagene før offentlig tilgang; dagens tellere ligger i prosessminnet og nullstilles ved omstart. Kontroller API-vilkår, personvernerklæring og håndtering av logger og oppslagsdata.
+- Publiser UMP-meldingen i AdMob, test samtykke/personvernvalg på begge plattformer og fullfør butikkens personvernopplysninger, app-ikon og skjermbilder.
+- Lag Android signeringsnøkkel og release AAB for Play Console. Bygg, signer og test iOS på Mac med Xcode og App Store Connect. Debug-APK-en er kun for test.
 
 Teknisk dokumentasjon: [Flutter AdMob](https://developers.google.com/admob/flutter/quick-start), [UMP](https://developers.google.com/admob/flutter/privacy), [ML Kit kameraformat](https://github.com/flutter-ml/google_ml_kit_flutter/tree/develop/packages/google_mlkit_commons).
