@@ -14,7 +14,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 extensions.configure<ApplicationExtension>("android") {
-    namespace = "no.arildb.tempo100"
+    namespace = "no.tempo100.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -24,7 +24,7 @@ extensions.configure<ApplicationExtension>("android") {
     }
 
     defaultConfig {
-        applicationId = "no.arildb.tempo100"
+        applicationId = "no.tempo100.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         // Uses the version code from pubspec.yaml. When using split APKs, 1000 * ABI_VERSION
@@ -36,8 +36,8 @@ extensions.configure<ApplicationExtension>("android") {
     }
 
     signingConfigs {
-        if (keystorePropertiesFile.exists()) {
-            create("release") {
+        create("release") {
+            if (keystorePropertiesFile.exists()) {
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
                 storePassword = keystoreProperties.getProperty("storePassword")
