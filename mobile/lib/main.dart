@@ -318,7 +318,7 @@ class _ResultCard extends StatelessWidget {
             _info(context, 'Tillatt totalvekt', result.vehicle['totalWeight'] == null ? null : '${result.vehicle['totalWeight']} kg'),
             _info(context, 'Registreringsstatus', result.vehicle['registration']),
             _info(context, 'EU-kontrollfrist', result.inspection['deadline']),
-            _info(context, 'Hentet', checkedAt == null ? null : '${checkedAt.day}.${checkedAt.month}.${checkedAt.year} ${tr(context, 'Hentet')} ${checkedAt.hour.toString().padLeft(2, '0')}:${checkedAt.minute.toString().padLeft(2, '0')}'),
+            _info(context, 'Hentet', checkedAt == null ? null : '${checkedAt.day}.${checkedAt.month}.${checkedAt.year} ${tr(context, 'kl.')} ${checkedAt.hour.toString().padLeft(2, '0')}:${checkedAt.minute.toString().padLeft(2, '0')}'),
             const SizedBox(height: 10),
             Text(tr(context, result.driving['explanation'] as String? ?? '')),
           ]),
