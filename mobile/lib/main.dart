@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -52,6 +53,7 @@ class _Tempo100AppState extends State<Tempo100App> {
   Widget build(BuildContext context) => MaterialApp(
     title: 'Tempo 100',
     locale: Locale(_language),
+    localizationsDelegates: GlobalMaterialLocalizations.delegates,
     supportedLocales: const [Locale('no'), Locale('en')],
     debugShowCheckedModeBanner: false,
     theme: ThemeData(useMaterial3: true, colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF123B37)), scaffoldBackgroundColor: const Color(0xFFF3F6F3)),
