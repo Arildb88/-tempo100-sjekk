@@ -157,7 +157,9 @@ class _HomePageState extends State<HomePage> {
       setState(() { _error = null; _listening = true; });
       await _speech.listen(
         onResult: (result) {
-          if (!mounted || !result.finalResult) return;
+          if (!mounted || !result.finalResult) {
+            return;
+          }
           final plate = normalizeSpokenPlate(result.recognizedWords);
           if (!isValidSpokenPlate(plate)) {
             setState(() {
