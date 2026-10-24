@@ -151,7 +151,11 @@ class _HomePageState extends State<HomePage> {
               setState(() => _listening = false);
             }
           },
-          onError: (_) { if (mounted) setState(() => _listening = false); },
+          onError: (_) {
+            if (mounted) {
+              setState(() => _listening = false);
+            }
+          },
         );
       }
       if (!_speechReady) {
@@ -187,10 +191,12 @@ class _HomePageState extends State<HomePage> {
         setState(() => _listening = _speech.isListening);
       }
     } catch (_) {
-      if (mounted) setState(() {
-        _listening = false;
-        _error = 'Talegjenkjenning feilet. Prøv igjen eller skriv nummeret inn.';
-      });
+      if (mounted) {
+        setState(() {
+          _listening = false;
+          _error = 'Talegjenkjenning feilet. Prøv igjen eller skriv nummeret inn.';
+        });
+      }
     }
   }
 
