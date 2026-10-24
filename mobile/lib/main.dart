@@ -76,6 +76,7 @@ class _HomePageState extends State<HomePage> {
   bool _speechReady = false;
   bool _listening = false;
   final SpeechToText _speech = SpeechToText();
+  final SharedPreferencesAsync _voicePreferences = SharedPreferencesAsync();
   int _lookupVersion = 0;
 
   @override
@@ -111,6 +112,28 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _startVoiceInput() async {
+    final alreadyAccepted = await _voicePreferences.getBool('tempo100.voiceNoticeAccepted') ?? false;
+    if (!alreadyAccepted) {
+      final continueVoice = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(tr(dialogContext, 'Talegjenkjenning')),
+          content: Text(tr(dialogContext, 'Lyd brukes bare mens du sier registreringsnummeret. Telefonens talegjenkjenning kan behandle lyd via en ekstern tjeneste. Tempo 100 lagrer ikke lydopptak. Fortsett?')),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(tr(dialogContext, 'Avbryt')),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(tr(dialogContext, 'Fortsett')),
+            ),
+          ],
+        ),
+      );
+      if (continueVoice != true) return;
+      await _voicePreferences.setBool('tempo100.voiceNoticeAccepted', true);
+    }
     if (_listening) {
       await _speech.stop();
       if (mounted) setState(() => _listening = false);
