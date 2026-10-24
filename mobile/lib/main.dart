@@ -113,6 +113,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _startVoiceInput() async {
     final alreadyAccepted = await _voicePreferences.getBool('tempo100.voiceNoticeAccepted') ?? false;
+    if (!mounted) return;
     if (!alreadyAccepted) {
       final continueVoice = await showDialog<bool>(
         context: context,
@@ -131,12 +132,15 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       );
-      if (continueVoice != true) return;
+      if (!mounted || continueVoice != true) return;
       await _voicePreferences.setBool('tempo100.voiceNoticeAccepted', true);
+      if (!mounted) return;
     }
     if (_listening) {
       await _speech.stop();
-      if (mounted) setState(() => _listening = false);
+      if (mounted) {
+        setState(() => _listening = false);
+      }
       return;
     }
     try {
@@ -179,7 +183,9 @@ class _HomePageState extends State<HomePage> {
           partialResults: false,
         ),
       );
-      if (mounted) setState(() => _listening = _speech.isListening);
+      if (mounted) {
+        setState(() => _listening = _speech.isListening);
+      }
     } catch (_) {
       if (mounted) setState(() {
         _listening = false;
