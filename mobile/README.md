@@ -45,6 +45,26 @@ Standardspråket velges i Play Console. Det er ikke satt av Flutter-prosjektet. 
 
 Android-app-ID og iOS-app-ID ligger i de genererte native-filene etter oppsett. Banner-ID-ene fra AdMob ligger i `lib/ad_banner.dart`. Debug bruker **Googles testannonseenheter**; release bruker dine egne banner-ID-er. Appen ber om oppdatert samtykkestatus ved start, viser eventuelt Googles UMP-skjema og laster bare annonse hvis `canRequestAds()` er sant. Opprett og publiser riktig melding i AdMob «Personvern og meldinger» før ekte annonser og offentlig utgivelse. Test personvernvalg på begge plattformer. Annonsen vises ikke over kamerabildet.
 
+## Release-signering og Play Store-pakke
+
+`key.properties` og `*.jks` er gitignorert. Opprett nøkkelen én gang og ta sikkerhetskopi utenfor Git:
+
+```powershell
+cd mobile\android
+Copy-Item key.properties.example key.properties
+keytool -genkeypair -v -keystore upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+```
+
+Sett de samme passordene og `storeFile=upload-keystore.jks` i `key.properties`. Absolutt sti, for eksempel `C:\\sikker\\tempo100-upload.jks`, fungerer også. Uten `key.properties` signeres release med debug-nøkkel og kan ikke lastes opp til Play.
+
+Bygg butikkpakken mot den offentlige HTTPS-serveren (PowerShell fra `mobile`):
+
+```powershell
+flutter build appbundle --release --dart-define=API_BASE_URL=https://DIN-SERVER.NO
+```
+
+Filen ligger i `build/app/outputs/bundle/release/app-release.aab`. Personvern-URL i Play Console: `https://DIN-SERVER.NO/personvern`. Øk tallet etter `+` i `pubspec.yaml` (`0.1.0+1`) for hver ny opplasting.
+
 ## Før utgivelse
 
 - Live-oppslag med godkjent og ikke godkjent tilhenger er bekreftet av eieren. Sammenlign resultatene med vognkort/godkjenningsattest for konkrete kontrolltilfeller.

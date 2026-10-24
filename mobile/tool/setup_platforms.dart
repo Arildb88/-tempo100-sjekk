@@ -10,7 +10,46 @@ void update(String path, String Function(String) transform) {
   file.writeAsStringSync(next);
 }
 
+String configureReleaseSigning(String gradle) {
+  var next = gradle;
+  if (!next.contains('keystorePropertiesFile')) {
+    next = next.replaceFirst('android {', '''
+val keystoreProperties = java.util.Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.inputStream().use { keystoreProperties.load(it) }
+}
+
+android {''');
+  }
+  if (!next.contains('create("release")')) {
+    next = next.replaceFirst(RegExp(r'\n    buildTypes \{'), '''
+
+    signingConfigs {
+        create("release") {
+            if (keystorePropertiesFile.exists()) {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storePassword = keystoreProperties.getProperty("storePassword")
+                val path = keystoreProperties.getProperty("storeFile")
+                    ?: error("key.properties mangler storeFile.")
+                val given = file(path)
+                storeFile = if (given.isAbsolute) given else rootProject.file(path)
+            }
+        }
+    }
+
+    buildTypes {''');
+  }
+  next = next.replaceFirst(
+    'signingConfig = signingConfigs.getByName("debug")',
+    'signingConfig = if (keystorePropertiesFile.exists()) signingConfigs.getByName("release") else signingConfigs.getByName("debug")',
+  );
+  return next;
+}
+
 void main() {
+  update('android/app/build.gradle.kts', configureReleaseSigning);
   update('android/app/src/main/AndroidManifest.xml', (xml) {
     if (!xml.contains('android.permission.CAMERA')) {
       xml = xml.replaceFirst('<application',

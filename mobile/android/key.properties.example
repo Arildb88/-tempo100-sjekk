@@ -1,0 +1,4 @@
+storePassword=bytt-dette
+keyPassword=bytt-dette
+keyAlias=upload
+storeFile=upload-keystore.jks

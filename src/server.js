@@ -6,7 +6,7 @@ import { normalizePlate, assessVehicle } from './vehicle.js';
 import { demoVehicle, fetchVehicle, LookupError } from './provider.js';
 
 const publicDir = fileURLToPath(new URL('../public/', import.meta.url));
-const assets = { '/': ['index.html', 'text/html'], '/privacy': ['privacy.html', 'text/html'], '/privacy.html': ['privacy.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/plate-reader.js': ['plate-reader.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'], '/icon.svg': ['icon.svg', 'image/svg+xml'], '/manifest.webmanifest': ['manifest.webmanifest', 'application/manifest+json'] };
+const assets = { '/': ['index.html', 'text/html'], '/personvern': ['personvern.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/plate-reader.js': ['plate-reader.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'], '/icon.svg': ['icon.svg', 'image/svg+xml'], '/manifest.webmanifest': ['manifest.webmanifest', 'application/manifest+json'] };
 
 export function makeServer({ mode = 'demo', apiKey, fetchImpl, rateLimit = 30, dailyLimit = 50000, adText, adUrl } = {}) {
   if (!['demo', 'live'].includes(mode)) throw new Error('DATA_MODE må være demo eller live.');
