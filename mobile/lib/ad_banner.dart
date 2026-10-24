@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+import 'app_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 // App IDs are configured natively; these are banner ad unit IDs.
@@ -86,13 +88,13 @@ class _ConsentBannerState extends State<ConsentBanner> {
     mainAxisSize: MainAxisSize.min,
     children: [
       if (_ad != null) ...[
-        const Padding(padding: EdgeInsets.only(top: 4), child: Text('Annonse', style: TextStyle(fontSize: 11))),
+        Padding(padding: const EdgeInsets.only(top: 4), child: Text(tr(context, 'Annonse'), style: const TextStyle(fontSize: 11))),
         SizedBox(width: _ad!.size.width.toDouble(), height: _ad!.size.height.toDouble(), child: AdWidget(ad: _ad!)),
       ],
       if (_showPrivacyOptions)
         TextButton(
           onPressed: () => ConsentForm.showPrivacyOptionsForm((_) {}),
-          child: const Text('Personvernvalg'),
+          child: Text(tr(context, 'Personvernvalg')),
         ),
     ],
   );
