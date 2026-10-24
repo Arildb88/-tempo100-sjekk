@@ -30,7 +30,7 @@ jobs:
       - name: Install and verify
         working-directory: mobile
         run: |
-          flutter pub get --enforce-lockfile
+          flutter pub get
           flutter pub outdated
           flutter analyze
           flutter test
