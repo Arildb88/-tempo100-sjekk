@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
+import 'plate_input.dart';
+
 import 'app_localizations.dart';
 
 import 'ad_banner.dart';
@@ -135,7 +137,7 @@ class _HomePageState extends State<HomePage> {
       await _speech.listen(
         onResult: (result) {
           if (!mounted || !result.finalResult) return;
-          final plate = _normalizeSpokenPlate(result.recognizedWords);
+          final plate = normalizeSpokenPlate(result.recognizedWords);
           if (!RegExp(r'^[A-ZÆØÅ0-9]{2,7}$').hasMatch(plate)) {
             setState(() {
               _listening = false;
@@ -161,24 +163,6 @@ class _HomePageState extends State<HomePage> {
         _error = 'Talegjenkjenning feilet. Prøv igjen eller skriv nummeret inn.';
       });
     }
-  }
-
-  String _normalizeSpokenPlate(String words) {
-    const digitWords = {
-      'ZERO': '0', 'OH': '0', 'NULL': '0', 'NULLEN': '0',
-      'ONE': '1', 'EN': '1', 'ETT': '1',
-      'TWO': '2', 'TO': '2', 'THREE': '3', 'TRE': '3',
-      'FOUR': '4', 'FIRE': '4', 'FIVE': '5', 'FEM': '5',
-      'SIX': '6', 'SEKS': '6', 'SEVEN': '7', 'SJU': '7', 'SYV': '7',
-      'EIGHT': '8', 'ATTE': '8', 'NINE': '9', 'NI': '9',
-    };
-    const commandWords = {'SKILT', 'NUMMER', 'REGISTRERINGSNUMMER', 'REGISTRATION', 'PLATE'};
-    final tokens = words.toUpperCase()
-        .replaceAll(RegExp(r'[^A-ZÆØÅ0-9\s]'), ' ')
-        .split(RegExp(r'\s+'))
-        .where((word) => word.isNotEmpty && !commandWords.contains(word))
-        .map((word) => digitWords[word] ?? word);
-    return tokens.join().replaceAll(RegExp(r'[^A-ZÆØÅ0-9]'), '');
   }
 
   Future<void> _scan() async {
