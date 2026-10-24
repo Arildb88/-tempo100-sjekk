@@ -106,4 +106,7 @@ const Map<String, String> _english = {
   'Sist oppdatert: 24. oktober 2026': 'Last updated: 24 October 2026',
   'Nummeret du skriver inn eller leser med kamera, sendes til appens server for oppslag. Registreringsnummer regnes som en personopplysning. I live-modus videresender serveren nummeret til Statens vegvesens API, som returnerer tekniske kjøretøyopplysninger uten navn eller kontaktopplysninger om eieren. Nummeret sendes ikke til Googles annonse-SDK.': 'The number you enter or scan with the camera is sent to the app server for a lookup. A registration number is personal data. In live mode, the server forwards it to the Norwegian Public Roads Administration API, which returns technical vehicle information without the owner’s name or contact details. The number is not sent to Google’s advertising SDK.',
   'kl.': 'at',
+  'Lyd brukes bare mens du sier registreringsnummeret. Telefonens talegjenkjenning kan behandle lyd via en ekstern tjeneste. Tempo 100 lagrer ikke lydopptak. Fortsett?': 'Audio is used only while you speak the registration number. Your phone’s speech recognition may process audio through an external service. Tempo 100 does not store audio recordings. Continue?',
+  'Avbryt': 'Cancel',
+  'Fortsett': 'Continue',
 };
