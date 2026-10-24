@@ -11,8 +11,8 @@ String normalizeSpokenPlate(String words) {
     'SKILT', 'NUMMER', 'REGISTRERINGSNUMMER', 'REGISTRATION', 'PLATE',
   };
   final tokens = words.toUpperCase()
-      .replaceAll(RegExp(r'[^A-ZÆØÅ0-9\\s]'), ' ')
-      .split(RegExp(r'\\s+'))
+      .replaceAll(RegExp(r'[^A-ZÆØÅ0-9\s]'), ' ')
+      .split(RegExp(r'\s+'))
       .where((word) => word.isNotEmpty && !commandWords.contains(word))
       .map((word) => digitWords[word] ?? word);
   return tokens.join().replaceAll(RegExp(r'[^A-ZÆØÅ0-9]'), '');
