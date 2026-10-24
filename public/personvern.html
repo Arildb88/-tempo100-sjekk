@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123b37">
+  <title>Personvernerklæring | Tempo 100</title>
+  <link rel="icon" href="/icon.svg">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header><a class="brand" href="/"><span class="logo">100</span> Tempo 100</a><span class="tag">Personvern</span></header>
+  <main class="legal">
+    <p class="eyebrow">Sist oppdatert 23. oktober 2026</p>
+    <h1>Personvernerklæring</h1>
+    <p>Denne erklæringen gjelder nettjenesten Tempo 100 og mobilappen Tempo 100 (Android-pakke <code>no.arildb.tempo100</code>). Den beskriver det appen og serveren faktisk gjør i dag. Fyll inn kontaktopplysninger i Google Play før publisering.</p>
+
+    <h2>Behandlingsansvarlig</h2>
+    <p>Behandlingsansvarlig er utgiveren av Tempo 100 i Google Play. Bruk e-postadressen som er oppgitt i butikkoppføringen hvis du vil utøve rettigheter eller stille spørsmål om personvern.</p>
+
+    <h2>Hva tjenesten gjør</h2>
+    <p>Tempo 100 slår opp om en tilhenger har teknisk underkode TEMPO100 i Statens vegvesens registerdata. Resultatet er en registerstatus for hengeren, ikke en tillatelse til å kjøre i 100 km/t og ikke bevis for en trafikkovertredelse.</p>
+
+    <h2>Opplysninger vi behandler</h2>
+    <ul>
+      <li><strong>Registreringsnummer</strong> som du skriver inn eller som kameraet leser. Dette sendes til vår server og, ved ekte oppslag, videre til Statens vegvesen. Registreringsnummer regnes som personopplysning.</li>
+      <li><strong>Kamerabilde</strong> brukes bare på enheten til å lese skilt. Bildet lastes ikke opp og lagres ikke av oss. Nettversjonen laster OCR-motor fra et CDN ved første bruk. Mobilappen leser tekst med Google ML Kit på enheten.</li>
+      <li><strong>IP-adresse</strong> brukes kortvarig i minnet på serveren for å begrense antall oppslag. Vi logger ikke registreringsnummer eller rådata fra Vegvesenet i applikasjonen. Vertsmiljøet (HTTPS-leverandør, reverse proxy) kan likevel ha egne tilgangslogger med IP og tidspunkt. Sjekk og begrens slike logger før offentlig drift.</li>
+      <li><strong>Ingen konto, ingen database, ingen oppslagshistorikk.</strong> Vi lagrer ikke søk, profiler eller identifikatorer for å følge deg over tid.</li>
+    </ul>
+
+    <h2>Formål og behandlingsgrunnlag</h2>
+    <p>Formålet er å vise registerstatus etter en forespørsel du selv starter. Behandlingsgrunnlaget er at oppslaget er nødvendig for å levere tjenesten du ber om (GDPR artikkel 6 nr. 1 bokstav b). Kamera brukes bare hvis du velger skiltlesing. Du kan alltid skrive nummeret manuelt.</p>
+    <p>Annonser i mobilappen vises først etter samtykkekontroll (Google UMP). Da er grunnlaget samtykke (artikkel 6 nr. 1 bokstav a) for den behandlingen Google beskriver i sitt samtykkeskjema.</p>
+
+    <h2>Mottakere</h2>
+    <ul>
+      <li><strong>Statens vegvesen</strong> ved live-oppslag, via API for tekniske kjøretøyopplysninger. Vegvesenet behandler opplysningene etter egne vilkår.</li>
+      <li><strong>Google</strong> i mobilappen: AdMob (annonser) og, der det er relevant, samtykkeplattformen UMP. Google kan behandle enhets- og annonseidentifikatorer etter sitt regelverk. Du kan åpne personvernvalg i appen når det kreves.</li>
+      <li><strong>Sponsoret lenke</strong> på nettsiden, bare hvis den er konfigurert. Hvis du åpner lenken, gjelder sponsorens nettsted.</li>
+      <li>Nettversjonens OCR kan laste filer fra jsDelivr og tessdata.projectnaptha.com.</li>
+    </ul>
+    <p>API-nøkkelen til Vegvesenet ligger bare på serveren, aldri i appen eller nettleseren.</p>
+
+    <h2>Lagringstid</h2>
+    <p>Vi lagrer ikke oppslag. Ratebegrensning i minnet slettes når prosessen restarter eller tidsvinduet utløper. Eventuelle logger hos verten bør ha kort lagringstid og ikke inneholde skiltnummer.</p>
+
+    <h2>Dine rettigheter</h2>
+    <p>Du har rett til innsyn, retting, sletting, begrensning, dataportabilitet og å klage til Datatilsynet der GDPR gjelder. Fordi vi ikke lagrer oppslagshistorikk, har vi vanligvis ingen søk å vise eller slette etter at svaret er sendt. Du kan når som helst avstå fra å bruke kamera og annonser, og du kan avinstallere appen.</p>
+
+    <h2>Barn</h2>
+    <p>Tjenesten er laget for førere og eiere av tilhenger, ikke for barn.</p>
+
+    <h2>Endringer</h2>
+    <p>Hvis behandlingen endres (for eksempel lagring av historikk, ny analyse eller nytt annonsenettverk), oppdateres denne siden og datoen øverst.</p>
+  </main>
+  <footer><a href="/">Til forsiden</a></footer>
+</body>
+</html>

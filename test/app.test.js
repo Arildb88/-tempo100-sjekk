@@ -84,7 +84,8 @@ test('HTTP demo flow, bad input, security headers and static path allowlist', as
   assert.equal((await post('AB1234')).status, 404);
   assert.equal((await fetch(`${origin}/.env`)).status, 404);
   assert.equal((await fetch(`${origin}/api/lookup`)).status, 405);
-  for (const path of ['/', '/app.js', '/style.css', '/icon.svg', '/manifest.webmanifest']) assert.equal((await fetch(origin + path)).status, 200);
+  for (const path of ['/', '/personvern', '/app.js', '/style.css', '/icon.svg', '/manifest.webmanifest']) assert.equal((await fetch(origin + path)).status, 200);
+  assert.ok((await (await fetch(`${origin}/personvern`)).text()).includes('Statens vegvesen'));
 });
 test('live mode never silently returns demo results or exposes keys', async t => {
   const { post } = await running(t, { mode: 'live', apiKey: 'private-secret', fetchImpl: async () => { throw new Error('private-secret'); } });
