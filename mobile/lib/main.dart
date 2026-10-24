@@ -5,10 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
-import 'plate_input.dart';
-
 import 'app_localizations.dart';
-
+import 'plate_input.dart';
 import 'ad_banner.dart';
 import 'lookup_api.dart';
 import 'plate_scanner.dart';
@@ -240,7 +238,7 @@ class _HomePageState extends State<HomePage> {
           FilledButton(onPressed: _loading || _mode == null ? null : _lookup, child: Text(tr(context, _loading ? 'Sjekker …' : 'Sjekk registreringsnummer'))),
           OutlinedButton.icon(onPressed: _mode == null ? null : _scan, icon: const Icon(Icons.camera_alt_outlined), label: Text(tr(context, 'Les skilt med kamera'))),
           OutlinedButton.icon(
-            onPressed: _mode == null ? null : _startVoiceInput,
+            onPressed: _loading || _mode == null ? null : _startVoiceInput,
             icon: Icon(_listening ? Icons.mic : Icons.mic_none),
             label: Text(tr(context, _listening ? 'Lytter … si bokstaver og tall' : 'Si skiltet')),
           ),
