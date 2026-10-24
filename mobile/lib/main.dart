@@ -32,9 +32,13 @@ class _Tempo100AppState extends State<Tempo100App> {
   }
 
   Future<void> _restoreLanguage() async {
-    final saved = await _preferences.getString('tempo100.language');
-    if (mounted && (saved == 'no' || saved == 'en')) {
-      setState(() => _language = saved!);
+    try {
+      final saved = await _preferences.getString('tempo100.language');
+      if (mounted && (saved == 'no' || saved == 'en')) {
+        setState(() => _language = saved!);
+      }
+    } catch (_) {
+      // Keep the default language if preferences are unavailable.
     }
   }
 
