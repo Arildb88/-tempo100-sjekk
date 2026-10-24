@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+
+import 'app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
@@ -127,7 +129,7 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: const Color(0xFF17161D),
-    appBar: AppBar(title: const Text('Les skilt'), backgroundColor: const Color(0xFF17161D), foregroundColor: Colors.white),
+    appBar: AppBar(title: Text(tr(context, 'Les skilt')), backgroundColor: const Color(0xFF17161D), foregroundColor: Colors.white),
     body: SafeArea(child: Column(children: [
       Expanded(child: Center(child: AspectRatio(
         aspectRatio: _camera?.value.isInitialized == true ? _camera!.value.aspectRatio : 3 / 4,
@@ -136,8 +138,8 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
           Center(child: Container(width: 260, height: 76, decoration: BoxDecoration(border: Border.all(color: const Color(0xFFD3B5FF), width: 2), borderRadius: BorderRadius.circular(10)))),
         ]),
       ))),
-      Padding(padding: const EdgeInsets.all(24), child: Text(_message, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 18))),
-      const Padding(padding: EdgeInsets.only(bottom: 20), child: Text('Skiltet leses automatisk. Kontroller nummeret i resultatet.', style: TextStyle(color: Colors.white70))),
+      Padding(padding: const EdgeInsets.all(24), child: Text(tr(context, _message), textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 18))),
+      Padding(padding: const EdgeInsets.only(bottom: 20), child: Text(tr(context, 'Skiltet leses automatisk. Kontroller nummeret i resultatet.'), style: const TextStyle(color: Colors.white70))),
     ])),
   );
 }
