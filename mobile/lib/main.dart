@@ -207,7 +207,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           context: context,
           builder: (dialogContext) => AlertDialog(
             title: Text(tr(dialogContext, 'Talegjenkjenning')),
-            content: Text(tr(dialogContext, 'Talegjenkjenning starter bare etter at du trykker på mikrofonknappen. Den lytter bare mens appen er åpen, og stopper når appen går i bakgrunnen. Si «Tempo 100» etterfulgt av skiltet, for eksempel «Tempo 100, AB 12345». Lyd kan behandles av talegjenkjenningen på enheten. Appen lagrer ikke lydopptak. Velg «Denne appøkten» for å bli spurt igjen neste gang appen åpnes, eller «Husk valget» for å lagre godkjenningen på enheten.')),
+            content: Text(tr(dialogContext, 'Talegjenkjenning starter bare etter at du trykker på mikrofonknappen. Den lytter bare mens appen er åpen, og stopper når appen går i bakgrunnen. Si «Tempo» etterfulgt av skiltet, for eksempel «Tempo, AB 12345». Lyd kan behandles av talegjenkjenningen på enheten. Appen lagrer ikke lydopptak. Velg «Denne appøkten» for å bli spurt igjen neste gang appen åpnes, eller «Husk valget» for å lagre godkjenningen på enheten.')),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(dialogContext).pop(),
@@ -271,11 +271,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           if (!mounted || !result.finalResult) {
             return;
           }
-          final plate = parseTempo100SpokenPlate(result.recognizedWords);
+          final plate = parseTempoSpokenPlate(result.recognizedWords);
           if (plate == null) {
             setState(() {
               _listening = false;
-              _error = 'Si «Tempo 100» først, etterfulgt av skiltet, for eksempel «AB 12345». Prøv igjen eller skriv det inn.';
+              _error = 'Si «Tempo» først, etterfulgt av skiltet, for eksempel «AB 12345». Prøv igjen eller skriv det inn.';
             });
             return;
           }
@@ -367,7 +367,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     ),
     body: SafeArea(child: Column(children: [
       Expanded(child: ListView(padding: const EdgeInsets.fromLTRB(20, 12, 20, 24), children: [
-        Text(tr(context, 'Er tilhengeren registrert som godkjent?'), style: const TextStyle(fontSize: 27, fontWeight: FontWeight.bold, height: 1.2)),
+        Text(tr(context, 'Kan tilhengeren kjøres i 100 km/t?'), style: const TextStyle(fontSize: 27, fontWeight: FontWeight.bold, height: 1.2)),
         const SizedBox(height: 16),
         if (_mode != null) _Notice(tr(context, _mode == 'demo' ? 'DEMO · fiktive data' : 'Registeroppslag · Statens vegvesen'), _mode == 'demo' ? const Color(0xFFFFF2D6) : const Color(0xFFE3F5E8)),
         if (!kReleaseMode) ExpansionTile(title: Text(tr(context, 'Testserver (debug)')), children: [
@@ -389,7 +389,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           OutlinedButton.icon(
             onPressed: _loading || _mode == null ? null : _startVoiceInput,
             icon: Icon(_listening ? Icons.mic : Icons.mic_none),
-            label: Text(tr(context, _listening ? 'Lytter … si «Tempo 100» og skiltet' : 'Si «Tempo 100» + skilt')),
+            label: Text(tr(context, _listening ? 'Lytter … si «Tempo» og skiltet' : 'Si «Tempo» + skilt')),
           ),
           if (_voiceConsentRemembered)
             Align(
