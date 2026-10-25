@@ -82,7 +82,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   bool _speechReady = false;
   bool _listening = false;
   final SpeechToText _speech = SpeechToText();
+  final SharedPreferencesAsync _voicePreferences = SharedPreferencesAsync();
   bool _voiceConsentAcceptedThisSession = false;
+  bool _voiceConsentRemembered = false;
   int _lookupVersion = 0;
   int _configVersion = 0;
   Timer? _autoLookupTimer;
@@ -93,6 +95,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _loadConfig();
+    unawaited(_restoreVoiceConsent());
   }
 
   Future<void> _loadConfig() async {
@@ -165,27 +168,76 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
   }
 
+  Future<void> _restoreVoiceConsent() async {
+    try {
+      final remembered = await _voicePreferences.getBool('tempo100.voiceConsentRemembered') ?? false;
+      if (mounted) setState(() => _voiceConsentRemembered = remembered);
+    } catch (_) {
+      // Treat unavailable preferences as no saved consent.
+    }
+  }
+
+  Future<void> _forgetVoiceConsent() async {
+    try {
+      await _voicePreferences.remove('tempo100.voiceConsentRemembered');
+      if (mounted) setState(() => _voiceConsentRemembered = false);
+    } catch (_) {
+      if (mounted) {
+        setState(() => _error = 'Kunne ikke endre den lagrede talegodkjenningen.');
+      }
+    }
+  }
+
   Future<void> _startVoiceInput() async {
     if (!_voiceConsentAcceptedThisSession) {
-      final continueVoice = await showDialog<bool>(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: Text(tr(dialogContext, 'Talegjenkjenning')),
-          content: Text(tr(dialogContext, 'Når du trykker Fortsett, brukes mikrofonen bare etter at du trykker på mikrofonknappen og mens appen er åpen. Si «Tempo 100» etterfulgt av skiltet, for eksempel «Tempo 100, AB 12345». Godkjenningen gjelder til appen lukkes. Talegjenkjenning kan behandle lyd via en ekstern tjeneste. Tempo 100 lagrer ikke lydopptak. Fortsett?')),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: Text(tr(dialogContext, 'Avbryt')),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: Text(tr(dialogContext, 'Fortsett')),
-            ),
-          ],
-        ),
-      );
-      if (!mounted || continueVoice != true) return;
-      setState(() => _voiceConsentAcceptedThisSession = true);
+      var remembered = false;
+      try {
+        remembered = await _voicePreferences.getBool('tempo100.voiceConsentRemembered') ?? false;
+      } catch (_) {
+        // If preferences are unavailable, ask for consent this session.
+      }
+      if (!mounted) return;
+      if (remembered) {
+        setState(() {
+          _voiceConsentRemembered = true;
+          _voiceConsentAcceptedThisSession = true;
+        });
+      } else {
+        final choice = await showDialog<Map<String, bool>>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(tr(dialogContext, 'Talegjenkjenning')),
+            content: Text(tr(dialogContext, 'Talegjenkjenning starter bare etter at du trykker på mikrofonknappen. Den lytter bare mens appen er åpen, og stopper når appen går i bakgrunnen. Si «Tempo 100» etterfulgt av skiltet, for eksempel «Tempo 100, AB 12345». Lyd kan behandles av talegjenkjenningen på enheten. Appen lagrer ikke lydopptak. Velg «Denne appøkten» for å bli spurt igjen neste gang appen åpnes, eller «Husk valget» for å lagre godkjenningen på enheten.')),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: Text(tr(dialogContext, 'Avbryt')),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop({'accepted': true, 'remember': false}),
+                child: Text(tr(dialogContext, 'Denne appøkten')),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(dialogContext).pop({'accepted': true, 'remember': true}),
+                child: Text(tr(dialogContext, 'Husk valget')),
+              ),
+            ],
+          ),
+        );
+        if (!mounted || choice?['accepted'] != true) return;
+        final remember = choice?['remember'] == true;
+        setState(() {
+          _voiceConsentAcceptedThisSession = true;
+          _voiceConsentRemembered = remember;
+        });
+        if (remember) {
+          try {
+            await _voicePreferences.setBool('tempo100.voiceConsentRemembered', true);
+          } catch (_) {
+            if (mounted) setState(() => _voiceConsentRemembered = false);
+          }
+        }
+      }
     }
     if (_listening) {
       await _speech.stop();
@@ -339,6 +391,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             icon: Icon(_listening ? Icons.mic : Icons.mic_none),
             label: Text(tr(context, _listening ? 'Lytter … si «Tempo 100» og skiltet' : 'Si «Tempo 100» + skilt')),
           ),
+          if (_voiceConsentRemembered)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                onPressed: _forgetVoiceConsent,
+                child: Text(tr(context, 'Spør meg neste gang')),
+              ),
+            ),
           if (_mode == 'demo') ...[
             const SizedBox(height: 8),
             Text(tr(context, 'Fiktive eksempler:'), style: const TextStyle(fontSize: 12)),
