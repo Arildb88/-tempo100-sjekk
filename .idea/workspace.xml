@@ -4,7 +4,20 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9ac8d2fa-8825-4d9e-bce6-eefbe05d9071" name="Changes" comment="" />
+    <list default="true" id="9ac8d2fa-8825-4d9e-bce6-eefbe05d9071" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/analysis_options.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/analysis_options.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/gradlew" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/gradlew" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/key.properties.example" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/android/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/android/local.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/tempo100.iml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/tempo100.iml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,10 +29,10 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 6,
-  "fromUser": false
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6,
+  &quot;fromUser&quot;: false
+}</component>
   <component name="ProjectId" id="3KCF3U6BV0Jn8IaGMn4yRX5kwZf" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -35,9 +48,11 @@
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "main",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "Test",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/arild/source/repos/-tempo100-sjekk"
+    "last_opened_file_path": "C:/Users/arild/source/repos/-tempo100-sjekk",
+    "show.migrate.to.gradle.popup": "false"
   }
 }]]></component>
   <component name="TaskManager">
