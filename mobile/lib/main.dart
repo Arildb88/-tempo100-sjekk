@@ -75,6 +75,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   LookupApi _api = LookupApi();
   final _plate = TextEditingController();
   final _server = TextEditingController();
+  final GlobalKey _resultCardKey = GlobalKey();
   String? _mode;
   String? _error;
   LookupResult? _result;
@@ -119,12 +120,29 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     setState(() { _loading = true; _error = null; _result = null; });
     try {
       final result = await _api.lookup(value);
-      if (mounted && version == _lookupVersion) setState(() => _result = result);
+      if (mounted && version == _lookupVersion) {
+        setState(() => _result = result);
+        _scrollResultIntoView();
+      }
     } catch (error) {
       if (mounted && version == _lookupVersion) setState(() => _error = error is LookupException ? error.message : 'Kunne ikke hente oppslaget. Prøv igjen.');
     } finally {
       if (mounted && version == _lookupVersion) setState(() => _loading = false);
     }
+  }
+
+  void _scrollResultIntoView() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final resultContext = _resultCardKey.currentContext;
+      if (resultContext == null) return;
+      unawaited(Scrollable.ensureVisible(
+        resultContext,
+        alignment: 0.08,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeInOut,
+      ));
+    });
   }
 
   void _onPlateChanged(String value) {
@@ -436,7 +454,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           _Notice(tr(context, _error!), const Color(0xFFFFE8E8)),
           if (_mode == null) TextButton(onPressed: _loadConfig, child: Text(tr(context, 'Prøv på nytt'))),
         ],
-        if (_result != null) ...[const SizedBox(height: 16), _ResultCard(_result!)],
+        if (_result != null) ...[const SizedBox(height: 16), _ResultCard(_result!, key: _resultCardKey)],
         const SizedBox(height: 24),
         Text(tr(context, 'Kontroller opplysninger og skilt. Resultatet gjelder hengerens registerstatus, ikke om den aktuelle kjøringen er lovlig. For passasjer eller når bilen står parkert.'), style: const TextStyle(fontSize: 12, color: Color(0xFF556B61))),
       ])),
@@ -463,7 +481,7 @@ class _Notice extends StatelessWidget {
 }
 
 class _ResultCard extends StatelessWidget {
-  const _ResultCard(this.result);
+  const _ResultCard(this.result, {super.key});
   final LookupResult result;
 
   @override
