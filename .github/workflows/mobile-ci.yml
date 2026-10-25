@@ -22,7 +22,7 @@ jobs:
       - name: Generate Flutter Android platform
         working-directory: mobile
         run: |
-          flutter create --platforms=android,ios --org no.tempo100 --project-name app --no-pub .
+          flutter create --platforms=android --org no.tempo100 --project-name app --no-pub .
           git restore -- pubspec.yaml pubspec.lock android/app/build.gradle.kts
       - name: Configure platform
         working-directory: mobile
