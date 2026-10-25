@@ -56,7 +56,7 @@ const Map<String, String> _english = {
   'Lovlig kjøring i 100 km/t kan ikke avgjøres fra hengerens registreringsnummer alene. Trekkbil, godkjenningsattest, dekk, last og veiens fartsgrense må også kontrolleres.': 'Whether driving at 100 km/h is legal cannot be determined from the trailer registration number alone. The towing vehicle, approval certificate, tyres, load, and road speed limit must also be checked.',
   'Starter kamera …': 'Starting camera…',
   'Fant ikke et bakre kamera.': 'No rear camera was found.',
-  'Hold skiltet tydelig i rammen': 'Keep the plate clearly inside the frame',
+  'Hold hele skiltet i rammen – én linje eller to': 'Keep the whole plate inside the frame, on one or two lines',
   'Kunne ikke starte kameraet. Skriv registreringsnummeret manuelt.': 'Could not start the camera. Enter the registration number manually.',
   'Skiltlesing feilet. Prøv igjen eller skriv nummeret selv.': 'Plate scanning failed. Try again or enter the number manually.',
   'Les skilt': 'Scan plate',
