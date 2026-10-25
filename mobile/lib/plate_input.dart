@@ -45,21 +45,7 @@ String? parseTempoSpokenPlate(String words) {
   final transcript = words.toUpperCase()
       .replaceAll(RegExp(r'[^A-ZÆØÅ0-9\s]'), ' ')
       .trim();
-  final command = RegExp(r'^TEMPO(.*).firstMatch(transcript);
-  if (command == null) return null;
-
-  // Continue accepting the previous longer phrase during the transition.
-  final plateWords = (command.group(1) ?? '').replaceFirst(
-    RegExp(r'^\s*(?:100|HUNDRE|HUNDRED|ETT\s+HUNDRE|ONE\s+HUNDRED)\b'),
-    '',
-  );
-  final plate = normalizeSpokenPlate(plateWords);
-  return isCompleteTypedPlate(plate) ? plate : null;
-}
-
-@Deprecated('Use parseTempoSpokenPlate instead.')
-String? parseTempo100SpokenPlate(String words) => parseTempoSpokenPlate(words);
-).firstMatch(transcript);
+  final command = RegExp(r'^TEMPO(.*)$').firstMatch(transcript);
   if (command == null) return null;
 
   // Continue accepting the previous longer phrase during the transition.
