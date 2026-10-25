@@ -49,7 +49,7 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
       if (!mounted) { await controller.dispose(); return; }
       _description = description;
       _camera = controller;
-      setState(() => _message = 'Hold skiltet tydelig i rammen');
+      setState(() => _message = 'Hold hele skiltet i rammen – én linje eller to');
       await controller.startImageStream(_scan);
     } catch (_) {
       if (mounted) setState(() => _message = 'Kunne ikke starte kameraet. Skriv registreringsnummeret manuelt.');
@@ -135,7 +135,7 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
         aspectRatio: _camera?.value.isInitialized == true ? _camera!.value.aspectRatio : 3 / 4,
         child: Stack(fit: StackFit.expand, children: [
           if (_camera?.value.isInitialized == true) CameraPreview(_camera!) else const Center(child: Icon(Icons.camera_alt_outlined, size: 48, color: Colors.white54)),
-          Center(child: Container(width: 260, height: 76, decoration: BoxDecoration(border: Border.all(color: const Color(0xFFD3B5FF), width: 2), borderRadius: BorderRadius.circular(10)))),
+          Center(child: Container(width: 280, height: 116, decoration: BoxDecoration(border: Border.all(color: const Color(0xFFD3B5FF), width: 2), borderRadius: BorderRadius.circular(10)))),
         ]),
       ))),
       Padding(padding: const EdgeInsets.all(24), child: Text(tr(context, _message), textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 18))),
