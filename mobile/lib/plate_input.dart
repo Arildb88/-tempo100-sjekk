@@ -20,3 +20,9 @@ String normalizeSpokenPlate(String words) {
 
 bool isValidSpokenPlate(String plate) =>
     RegExp(r'^[A-ZÆØÅ0-9]{2,7}$').hasMatch(plate);
+
+String normalizeTypedPlate(String value) =>
+    value.toUpperCase().replaceAll(RegExp(r'\s+'), '');
+
+bool isCompleteTypedPlate(String value) =>
+    RegExp(r'^[A-Z]{2}\d{4,5}$').hasMatch(normalizeTypedPlate(value));

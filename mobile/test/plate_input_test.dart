@@ -1,0 +1,21 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:tempo100/plate_input.dart';
+
+void main() {
+  group('typed registration plate', () {
+    test('normalizes spaces and lowercase letters', () {
+      expect(normalizeTypedPlate('ab 1234'), 'AB1234');
+    });
+
+    test('accepts complete four or five digit plates', () {
+      expect(isCompleteTypedPlate('AB 1234'), isTrue);
+      expect(isCompleteTypedPlate('CD12345'), isTrue);
+    });
+
+    test('rejects incomplete and malformed plates', () {
+      expect(isCompleteTypedPlate('AB 123'), isFalse);
+      expect(isCompleteTypedPlate('A 12345'), isFalse);
+      expect(isCompleteTypedPlate('AB123456'), isFalse);
+    });
+  });
+}

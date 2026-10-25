@@ -1,7 +1,7 @@
 name: tempo100
 description: Sjekk registrert Tempo 100-godkjenning for tilhengere.
 publish_to: none
-version: 0.1.6+7
+version: 0.1.6+8
 
 environment:
   sdk: '>=3.12.0 <4.0.0'

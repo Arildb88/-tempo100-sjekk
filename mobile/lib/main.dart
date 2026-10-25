@@ -84,6 +84,9 @@ class _HomePageState extends State<HomePage> {
   final SpeechToText _speech = SpeechToText();
   final SharedPreferencesAsync _voicePreferences = SharedPreferencesAsync();
   int _lookupVersion = 0;
+  int _configVersion = 0;
+  Timer? _autoLookupTimer;
+  String? _autoLookupCandidate;
 
   @override
   void initState() {
@@ -92,12 +95,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadConfig() async {
-    final version = _lookupVersion;
+    final version = ++_configVersion;
     try {
       final mode = await _api.mode();
-      if (mounted && version == _lookupVersion) setState(() { _mode = mode; _error = null; });
+      if (mounted && version == _configVersion) {
+        setState(() { _mode = mode; _error = null; });
+        _scheduleAutomaticLookup(_plate.text);
+      }
     } catch (_) {
-      if (mounted && version == _lookupVersion) setState(() => _error = 'Får ikke kontakt med serveren. Sjekk nettverket og prøv igjen.');
+      if (mounted && version == _configVersion) setState(() => _error = 'Får ikke kontakt med serveren. Sjekk nettverket og prøv igjen.');
     }
   }
 
@@ -115,6 +121,37 @@ class _HomePageState extends State<HomePage> {
     } finally {
       if (mounted && version == _lookupVersion) setState(() => _loading = false);
     }
+  }
+
+  void _onPlateChanged(String value) {
+    _autoLookupTimer?.cancel();
+    _autoLookupCandidate = null;
+    _lookupVersion++;
+    if (_loading || _result != null || _error != null) {
+      setState(() { _loading = false; _result = null; _error = null; });
+    }
+    _scheduleAutomaticLookup(value);
+  }
+
+  void _scheduleAutomaticLookup(String value) {
+    _autoLookupTimer?.cancel();
+    final plate = normalizeTypedPlate(value);
+    if (_mode == null || !isCompleteTypedPlate(plate) || _autoLookupCandidate == plate) return;
+    _autoLookupTimer = Timer(const Duration(milliseconds: 800), () {
+      if (!mounted || _mode == null || normalizeTypedPlate(_plate.text) != plate || _autoLookupCandidate == plate) return;
+      _autoLookupCandidate = plate;
+      FocusScope.of(context).unfocus();
+      _lookup();
+    });
+  }
+
+  void _submitPlate() {
+    _autoLookupTimer?.cancel();
+    final plate = normalizeTypedPlate(_plate.text);
+    FocusScope.of(context).unfocus();
+    if (!isCompleteTypedPlate(plate) || _mode == null) return;
+    _autoLookupCandidate = plate;
+    _lookup();
   }
 
   Future<void> _startVoiceInput() async {
@@ -222,6 +259,9 @@ class _HomePageState extends State<HomePage> {
       _api.dispose();
       _api = next;
       _lookupVersion++;
+      _configVersion++;
+      _autoLookupTimer?.cancel();
+      _autoLookupCandidate = null;
       setState(() { _mode = null; _result = null; _error = null; _loading = false; });
       _loadConfig();
     } catch (_) {
@@ -232,6 +272,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     _lookupVersion++;
+    _configVersion++;
+    _autoLookupTimer?.cancel();
     _plate.dispose();
     _server.dispose();
     _api.dispose();
@@ -275,10 +317,12 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(height: 18),
         Card(elevation: 0, color: Colors.white, child: Padding(padding: const EdgeInsets.all(18), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           TextField(controller: _plate, textCapitalization: TextCapitalization.characters, keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.done,
             decoration: InputDecoration(labelText: tr(context, 'Hengerens registreringsnummer'), hintText: 'AB 1234', border: const OutlineInputBorder()),
-            onSubmitted: (_) => _lookup()),
+            onChanged: _onPlateChanged,
+            onSubmitted: (_) => _submitPlate()),
           const SizedBox(height: 12),
-          FilledButton(onPressed: _loading || _mode == null ? null : _lookup, child: Text(tr(context, _loading ? 'Sjekker …' : 'Sjekk registreringsnummer'))),
+          FilledButton(onPressed: _loading || _mode == null ? null : _submitPlate, child: Text(tr(context, _loading ? 'Sjekker …' : 'Sjekk registreringsnummer'))),
           OutlinedButton.icon(onPressed: _mode == null ? null : _scan, icon: const Icon(Icons.camera_alt_outlined), label: Text(tr(context, 'Les skilt med kamera'))),
           OutlinedButton.icon(
             onPressed: _loading || _mode == null ? null : _startVoiceInput,
@@ -303,11 +347,13 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(height: 24),
         Text(tr(context, 'Kontroller opplysninger og skilt. Resultatet gjelder hengerens registerstatus, ikke om den aktuelle kjøringen er lovlig. For passasjer eller når bilen står parkert.'), style: const TextStyle(fontSize: 12, color: Color(0xFF556B61))),
       ])),
-      const ConsentBanner(),
-      TextButton(
-        onPressed: () => Navigator.of(context).push<void>(MaterialPageRoute<void>(builder: (_) => const PrivacyPolicyPage())),
-        child: Text(tr(context, 'Personvern')),
-      ),
+      if (MediaQuery.viewInsetsOf(context).bottom == 0) ...[
+        const ConsentBanner(),
+        TextButton(
+          onPressed: () => Navigator.of(context).push<void>(MaterialPageRoute<void>(builder: (_) => const PrivacyPolicyPage())),
+          child: Text(tr(context, 'Personvern')),
+        ),
+      ],
     ])),
   );
 }
