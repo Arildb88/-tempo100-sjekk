@@ -9,6 +9,7 @@ String normalizeSpokenPlate(String words) {
   };
   const commandWords = {
     'SKILT', 'NUMMER', 'REGISTRERINGSNUMMER', 'REGISTRATION', 'PLATE',
+    'TILHENGER', 'HENGER', 'REGNR',
   };
   final tokens = words.toUpperCase()
       .replaceAll(RegExp(r'[^A-ZÆØÅ0-9\s]'), ' ')
@@ -26,3 +27,15 @@ String normalizeTypedPlate(String value) =>
 
 bool isCompleteTypedPlate(String value) =>
     RegExp(r'^[A-Z]{2}\d{4,5}$').hasMatch(normalizeTypedPlate(value));
+
+String? parseTempo100SpokenPlate(String words) {
+  final transcript = words.toUpperCase()
+      .replaceAll(RegExp(r'[^A-ZÆØÅ0-9\s]'), ' ')
+      .trim();
+  final command = RegExp(
+    r'^TEMPO\s*(?:100|HUNDRE|HUNDRED|ETT\s+HUNDRE|ONE\s+HUNDRED)\b(.*)$',
+  ).firstMatch(transcript);
+  if (command == null) return null;
+  final plate = normalizeSpokenPlate(command.group(1) ?? '');
+  return isCompleteTypedPlate(plate) ? plate : null;
+}

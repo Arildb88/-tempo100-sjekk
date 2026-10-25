@@ -71,7 +71,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   LookupApi _api = LookupApi();
   final _plate = TextEditingController();
   final _server = TextEditingController();
@@ -82,7 +82,7 @@ class _HomePageState extends State<HomePage> {
   bool _speechReady = false;
   bool _listening = false;
   final SpeechToText _speech = SpeechToText();
-  final SharedPreferencesAsync _voicePreferences = SharedPreferencesAsync();
+  bool _voiceConsentAcceptedThisSession = false;
   int _lookupVersion = 0;
   int _configVersion = 0;
   Timer? _autoLookupTimer;
@@ -91,6 +91,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadConfig();
   }
 
@@ -154,15 +155,23 @@ class _HomePageState extends State<HomePage> {
     _lookup();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) return;
+    _autoLookupTimer?.cancel();
+    if (_listening) {
+      unawaited(_speech.stop());
+      if (mounted) setState(() => _listening = false);
+    }
+  }
+
   Future<void> _startVoiceInput() async {
-    final alreadyAccepted = await _voicePreferences.getBool('tempo100.voiceNoticeAccepted') ?? false;
-    if (!mounted) return;
-    if (!alreadyAccepted) {
+    if (!_voiceConsentAcceptedThisSession) {
       final continueVoice = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
           title: Text(tr(dialogContext, 'Talegjenkjenning')),
-          content: Text(tr(dialogContext, 'Lyd brukes bare mens du sier registreringsnummeret. Telefonens talegjenkjenning kan behandle lyd via en ekstern tjeneste. Tempo 100 lagrer ikke lydopptak. Fortsett?')),
+          content: Text(tr(dialogContext, 'Når du trykker Fortsett, brukes mikrofonen bare etter at du trykker på mikrofonknappen og mens appen er åpen. Si «Tempo 100» etterfulgt av skiltet, for eksempel «Tempo 100, AB 12345». Godkjenningen gjelder til appen lukkes. Talegjenkjenning kan behandle lyd via en ekstern tjeneste. Tempo 100 lagrer ikke lydopptak. Fortsett?')),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
@@ -176,8 +185,7 @@ class _HomePageState extends State<HomePage> {
         ),
       );
       if (!mounted || continueVoice != true) return;
-      await _voicePreferences.setBool('tempo100.voiceNoticeAccepted', true);
-      if (!mounted) return;
+      setState(() => _voiceConsentAcceptedThisSession = true);
     }
     if (_listening) {
       await _speech.stop();
@@ -211,22 +219,23 @@ class _HomePageState extends State<HomePage> {
           if (!mounted || !result.finalResult) {
             return;
           }
-          final plate = normalizeSpokenPlate(result.recognizedWords);
-          if (!isValidSpokenPlate(plate)) {
+          final plate = parseTempo100SpokenPlate(result.recognizedWords);
+          if (plate == null) {
             setState(() {
               _listening = false;
-              _error = 'Kunne ikke tolke skiltet. Prøv å si bokstavene og tallene tydelig, eller skriv det inn.';
+              _error = 'Si «Tempo 100» først, etterfulgt av skiltet, for eksempel «AB 12345». Prøv igjen eller skriv det inn.';
             });
             return;
           }
+          _autoLookupCandidate = null;
           _plate.value = TextEditingValue(text: plate, selection: TextSelection.collapsed(offset: plate.length));
           setState(() => _listening = false);
           _lookup();
         },
         listenOptions: SpeechListenOptions(
           localeId: widget.language == 'en' ? 'en-US' : 'nb-NO',
-          listenFor: const Duration(seconds: 8),
-          pauseFor: const Duration(seconds: 2),
+          listenFor: const Duration(seconds: 15),
+          pauseFor: const Duration(seconds: 4),
           partialResults: false,
         ),
       );
@@ -271,6 +280,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _lookupVersion++;
     _configVersion++;
     _autoLookupTimer?.cancel();
@@ -327,7 +337,7 @@ class _HomePageState extends State<HomePage> {
           OutlinedButton.icon(
             onPressed: _loading || _mode == null ? null : _startVoiceInput,
             icon: Icon(_listening ? Icons.mic : Icons.mic_none),
-            label: Text(tr(context, _listening ? 'Lytter … si bokstaver og tall' : 'Si skiltet')),
+            label: Text(tr(context, _listening ? 'Lytter … si «Tempo 100» og skiltet' : 'Si «Tempo 100» + skilt')),
           ),
           if (_mode == 'demo') ...[
             const SizedBox(height: 8),
