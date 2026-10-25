@@ -256,13 +256,27 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           },
           onError: (_) {
             if (mounted) {
-              setState(() => _listening = false);
+              setState(() {
+                _listening = false;
+                _error = 'Talegjenkjenning feilet. Kontroller mikrofontilgang og valgt språk.';
+              });
             }
           },
         );
       }
       if (!_speechReady) {
         setState(() => _error = 'Mikrofon eller talegjenkjenning er ikke tilgjengelig.');
+        return;
+      }
+      final installedLocales = await _speech.locales();
+      final localeId = speechLocaleIdForLanguage(
+        widget.language,
+        installedLocales.map((locale) => locale.localeId),
+      );
+      if (localeId == null) {
+        setState(() => _error = widget.language == 'en'
+            ? 'Engelsk talegjenkjenning er ikke tilgjengelig på telefonen. Aktiver eller installer talegjenkjenning med engelsk støtte, eller velg NO i appen.'
+            : 'Norsk talegjenkjenning er ikke tilgjengelig på telefonen. Aktiver eller installer talegjenkjenning med norsk støtte, eller velg EN i appen.');
         return;
       }
       setState(() { _error = null; _listening = true; });
@@ -285,7 +299,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           _lookup();
         },
         listenOptions: SpeechListenOptions(
-          localeId: widget.language == 'en' ? 'en-US' : 'nb-NO',
+          localeId: localeId,
           listenFor: const Duration(seconds: 15),
           pauseFor: const Duration(seconds: 4),
           partialResults: false,
