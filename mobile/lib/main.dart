@@ -207,7 +207,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           context: context,
           builder: (dialogContext) => AlertDialog(
             title: Text(tr(dialogContext, 'Talegjenkjenning')),
-            content: Text(tr(dialogContext, 'Talegjenkjenning starter bare etter at du trykker på mikrofonknappen. Den lytter bare mens appen er åpen, og stopper når appen går i bakgrunnen. Si «Tempo» etterfulgt av skiltet, for eksempel «Tempo, AB 12345». Lyd kan behandles av talegjenkjenningen på enheten. Appen lagrer ikke lydopptak. Velg «Denne appøkten» for å bli spurt igjen neste gang appen åpnes, eller «Husk valget» for å lagre godkjenningen på enheten.')),
+            content: Text(tr(dialogContext, 'Talegjenkjenning starter bare etter at du trykker på mikrofonknappen. Den lytter bare mens appen er åpen, og stopper når appen går i bakgrunnen. Si «Tempo» etterfulgt av bokstavene og tallene, for eksempel «Tempo, A B, én to tre fire fem». Lyd kan behandles av talegjenkjenningen på enheten. Appen lagrer ikke lydopptak. Velg «Denne appøkten» for å bli spurt igjen neste gang appen åpnes, eller «Husk valget» for å lagre godkjenningen på enheten.')),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(dialogContext).pop(),
@@ -287,9 +287,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           }
           final plate = parseTempoSpokenPlate(result.recognizedWords);
           if (plate == null) {
+            final heard = result.recognizedWords.trim();
+            final heardText = heard.isEmpty
+                ? ''
+                : widget.language == 'en'
+                    ? ' Heard: "$heard".'
+                    : ' Oppfattet: «$heard».';
+            final prompt = widget.language == 'en'
+                ? 'Say “Tempo”, then say the two letters and each digit separately.'
+                : 'Si «Tempo», og si deretter de to bokstavene og hvert tall for seg.';
             setState(() {
               _listening = false;
-              _error = 'Si «Tempo» først, etterfulgt av skiltet, for eksempel «AB 12345». Prøv igjen eller skriv det inn.';
+              _error = '$heardText $prompt';
             });
             return;
           }
@@ -403,7 +412,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           OutlinedButton.icon(
             onPressed: _loading || _mode == null ? null : _startVoiceInput,
             icon: Icon(_listening ? Icons.mic : Icons.mic_none),
-            label: Text(tr(context, _listening ? 'Lytter … si «Tempo» og skiltet' : 'Si «Tempo» + skilt')),
+            label: Text(tr(context, _listening ? 'Lytter … si «Tempo» og bokstavene og tallene' : 'Si «Tempo» + bokstaver og tall')),
           ),
           if (_voiceConsentRemembered)
             Align(
