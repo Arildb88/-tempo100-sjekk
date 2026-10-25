@@ -9,7 +9,7 @@ String translateForLanguage(String languageCode, String source) {
 }
 
 const Map<String, String> _english = {
-  'Er tilhengeren registrert som godkjent?': 'Is the trailer registered as Tempo 100 approved?',
+  'Kan tilhengeren kjøres i 100 km/t?': 'Is the trailer approved for 100 km/t?',
   'DEMO · fiktive data': 'DEMO · sample data',
   'Registeroppslag · Statens vegvesen': 'Registry lookup · Norwegian Public Roads Administration',
   'Testserver (debug)': 'Test server (debug)',
@@ -19,8 +19,8 @@ const Map<String, String> _english = {
   'Sjekker …': 'Checking…',
   'Sjekk registreringsnummer': 'Check registration number',
   'Les skilt med kamera': 'Scan plate with camera',
-  'Si «Tempo 100» + skilt': 'Say “Tempo 100” + plate',
-  'Lytter … si «Tempo 100» og skiltet': 'Listening… say “Tempo 100” and the plate',
+  'Si «Tempo» + skilt': 'Say “Tempo” + plate',
+  'Lytter … si «Tempo» og skiltet': 'Listening… say “Tempo” and the plate',
   'Fiktive eksempler:': 'Sample entries:',
   'Får ikke kontakt med serveren. Sjekk nettverket og prøv igjen.': 'Could not reach the server. Check your connection and try again.',
   'Kunne ikke hente oppslaget. Prøv igjen.': 'Could not load the lookup. Try again.',
@@ -62,7 +62,7 @@ const Map<String, String> _english = {
   'Les skilt': 'Scan plate',
   'Skiltet leses automatisk. Kontroller nummeret i resultatet.': 'The plate is scanned automatically. Check the number shown in the result.',
   'Mikrofon eller talegjenkjenning er ikke tilgjengelig.': 'Microphone or speech recognition is unavailable.',
-  'Si «Tempo 100» først, etterfulgt av skiltet, for eksempel «AB 12345». Prøv igjen eller skriv det inn.': 'Say “Tempo 100” first, followed by the plate, for example “AB 12345”. Try again or enter it manually.',
+  'Si «Tempo» først, etterfulgt av skiltet, for eksempel «AB 12345». Prøv igjen eller skriv det inn.': 'Say “Tempo” first, followed by the plate, for example “AB 12345”. Try again or enter it manually.',
   'Denne appøkten': 'This app session',
   'Husk valget': 'Remember this choice',
   'Spør meg neste gang': 'Ask me next time',
@@ -77,7 +77,7 @@ const Map<String, String> _english = {
   'Kamera': 'Camera',
   'Kamerarammer behandles på enheten med tekstgjenkjenning for å lese registreringsnummer. Appen tar ikke opp video, og bilder eller kamerarammer lastes ikke opp eller lagres av appen. Du kan også skrive nummeret manuelt.': 'Camera frames are processed on the device with text recognition to read the registration number. The app does not record video, and it does not upload or store images or camera frames. You can also enter the number manually.',
   'Talegjenkjenning': 'Speech recognition',
-  'Du kan bruke mikrofonknappen til å si «Tempo 100» etterfulgt av registreringsnummeret. Talegjenkjenning starter bare etter bekreftelse og et trykk på mikrofonknappen. Den stopper når appen går i bakgrunnen. Du kan velge om godkjenningen bare gjelder appøkten eller skal huskes på enheten. Lyd kan behandles av talegjenkjenningstjenesten på enheten, men appen lagrer ikke lydopptak eller transkripsjoner. Det gjenkjente registreringsnummeret fylles inn i skjemaet og sendes til appserveren når oppslaget utføres. Du kan alltid skrive nummeret manuelt.': 'You can use the microphone button to say “Tempo 100” followed by a registration number. Speech recognition starts only after confirmation and a tap on the microphone button. It stops when the app goes into the background. You can choose whether consent applies only to the app session or is remembered on this device. Audio may be processed by the device’s speech recognition service, but the app does not store audio recordings or transcripts. The recognized registration number is placed in the form and sent to the app server when the lookup is performed. You can always enter the number manually.',
+  'Du kan bruke mikrofonknappen til å si «Tempo» etterfulgt av registreringsnummeret. Talegjenkjenning starter bare etter bekreftelse og et trykk på mikrofonknappen. Den stopper når appen går i bakgrunnen. Du kan velge om godkjenningen bare gjelder appøkten eller skal huskes på enheten. Lyd kan behandles av talegjenkjenningstjenesten på enheten, men appen lagrer ikke lydopptak eller transkripsjoner. Det gjenkjente registreringsnummeret fylles inn i skjemaet og sendes til appserveren når oppslaget utføres. Du kan alltid skrive nummeret manuelt.': 'You can use the microphone button to say “Tempo” followed by a registration number. Speech recognition starts only after confirmation and a tap on the microphone button. It stops when the app goes into the background. You can choose whether consent applies only to the app session or is remembered on this device. Audio may be processed by the device’s speech recognition service, but the app does not store audio recordings or transcripts. The recognized registration number is placed in the form and sent to the app server when the lookup is performed. You can always enter the number manually.',
   'Annonser og Google': 'Ads and Google',
   'Appen bruker Google Mobile Ads SDK til bannerannonser og Googles UMP til samtykkevalg der dette kreves. Annonser forespørres bare når SDK-et oppgir at det er tillatt. Google Mobile Ads SDK kan samle inn og dele IP-adresse (som kan brukes til å anslå omtrentlig plassering), annonse- eller enhetsidentifikatorer, app- og annonseinteraksjoner samt diagnostikk- og ytelsesopplysninger for annonselevering, måling, diagnostikk og beskyttelse mot svindel. Hvilke annonser og behandlinger som brukes, avhenger blant annet av personvernvalgene dine og Googles innstillinger.': 'The app uses the Google Mobile Ads SDK for banner ads and Google UMP for consent choices where required. Ads are requested only when the SDK indicates this is allowed. Google Mobile Ads SDK may collect and share IP address (which can be used to estimate approximate location), advertising or device identifiers, app and ad interactions, and diagnostic and performance information for ad delivery, measurement, diagnostics, and fraud prevention. The ads and processing used may depend on your privacy choices and Google settings.',
   'Andre mottakere': 'Other recipients',
@@ -109,7 +109,7 @@ const Map<String, String> _english = {
   'Sist oppdatert: 25. oktober 2026': 'Last updated: 25 October 2026',
   'Nummeret du skriver inn eller leser med kamera, sendes til appens server for oppslag. Registreringsnummer regnes som en personopplysning. I live-modus videresender serveren nummeret til Statens vegvesens API, som returnerer tekniske kjøretøyopplysninger uten navn eller kontaktopplysninger om eieren. Nummeret sendes ikke til Googles annonse-SDK.': 'The number you enter or scan with the camera is sent to the app server for a lookup. A registration number is personal data. In live mode, the server forwards it to the Norwegian Public Roads Administration API, which returns technical vehicle information without the owner’s name or contact details. The number is not sent to Google’s advertising SDK.',
   'kl.': 'at',
-  'Talegjenkjenning starter bare etter at du trykker på mikrofonknappen. Den lytter bare mens appen er åpen, og stopper når appen går i bakgrunnen. Si «Tempo 100» etterfulgt av skiltet, for eksempel «Tempo 100, AB 12345». Lyd kan behandles av talegjenkjenningen på enheten. Appen lagrer ikke lydopptak. Velg «Denne appøkten» for å bli spurt igjen neste gang appen åpnes, eller «Husk valget» for å lagre godkjenningen på enheten.': 'Speech recognition starts only after you tap the microphone button. It listens only while the app is open and stops when the app goes into the background. Say “Tempo 100” followed by the plate, for example “Tempo 100, AB 12345”. Audio may be processed by the device’s speech recognition feature. The app does not store audio recordings. Choose “This app session” to be asked again next time the app opens, or “Remember this choice” to save approval on this device.',
+  'Talegjenkjenning starter bare etter at du trykker på mikrofonknappen. Den lytter bare mens appen er åpen, og stopper når appen går i bakgrunnen. Si «Tempo» etterfulgt av skiltet, for eksempel «Tempo, AB 12345». Lyd kan behandles av talegjenkjenningen på enheten. Appen lagrer ikke lydopptak. Velg «Denne appøkten» for å bli spurt igjen neste gang appen åpnes, eller «Husk valget» for å lagre godkjenningen på enheten.': 'Speech recognition starts only after you tap the microphone button. It listens only while the app is open and stops when the app goes into the background. Say “Tempo” followed by the plate, for example “Tempo, AB 12345”. Audio may be processed by the device’s speech recognition feature. The app does not store audio recordings. Choose “This app session” to be asked again next time the app opens, or “Remember this choice” to save approval on this device.',
   'Avbryt': 'Cancel',
   'Fortsett': 'Continue',
 };
