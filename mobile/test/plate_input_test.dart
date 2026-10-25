@@ -37,6 +37,7 @@ void main() {
     test('extracts plate after the short Norwegian wake word', () {
       expect(parseTempoSpokenPlate('Tempo, AB 1 2 3 4 5'), 'AB12345');
       expect(parseTempoSpokenPlate('Tempo AB 12345'), 'AB12345');
+      expect(parseTempoSpokenPlate('TempoAB12345'), 'AB12345');
       expect(parseTempoSpokenPlate('Tempo, AB 1234'), 'AB1234');
     });
 
