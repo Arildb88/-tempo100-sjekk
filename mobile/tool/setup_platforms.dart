@@ -112,7 +112,11 @@ void main() {
   if (File('ios/Podfile').existsSync()) {
     update('ios/Podfile', (podfile) {
       if (RegExp(r'^\s*#?\s*platform :ios,', multiLine: true).hasMatch(podfile)) {
-        return podfile.replaceFirst(RegExp(r'^\s*#?\s*platform :ios,.*
+        return podfile.replaceFirst(RegExp(r'^\s*#?\s*platform :ios,.*$', multiLine: true), "platform :ios, '15.5'");
+      }
+      return "platform :ios, '15.5'\n$podfile";
+    });
+  }
   update('ios/Runner.xcodeproj/project.pbxproj', (project) =>
       project.replaceAll(RegExp(r'IPHONEOS_DEPLOYMENT_TARGET = [0-9.]+;'), 'IPHONEOS_DEPLOYMENT_TARGET = 15.5;'));
   }
