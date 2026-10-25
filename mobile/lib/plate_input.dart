@@ -28,14 +28,21 @@ String normalizeTypedPlate(String value) =>
 bool isCompleteTypedPlate(String value) =>
     RegExp(r'^[A-Z]{2}\d{4,5}$').hasMatch(normalizeTypedPlate(value));
 
-String? parseTempo100SpokenPlate(String words) {
+String? parseTempoSpokenPlate(String words) {
   final transcript = words.toUpperCase()
-      .replaceAll(RegExp(r'[^A-ZÆØÅ0-9\s]'), ' ')
+      .replaceAll(RegExp(r'[^A-ZÆØÅ0-9\\s]'), ' ')
       .trim();
-  final command = RegExp(
-    r'^TEMPO\s*(?:100|HUNDRE|HUNDRED|ETT\s+HUNDRE|ONE\s+HUNDRED)\b(.*)$',
-  ).firstMatch(transcript);
+  final command = RegExp(r'^TEMPO\\b(.*)$').firstMatch(transcript);
   if (command == null) return null;
-  final plate = normalizeSpokenPlate(command.group(1) ?? '');
+
+  // Continue accepting the previous longer phrase during the transition.
+  final plateWords = (command.group(1) ?? '').replaceFirst(
+    RegExp(r'^\\s*(?:100|HUNDRE|HUNDRED|ETT\\s+HUNDRE|ONE\\s+HUNDRED)\\b'),
+    '',
+  );
+  final plate = normalizeSpokenPlate(plateWords);
   return isCompleteTypedPlate(plate) ? plate : null;
 }
+
+@Deprecated('Use parseTempoSpokenPlate instead.')
+String? parseTempo100SpokenPlate(String words) => parseTempoSpokenPlate(words);
