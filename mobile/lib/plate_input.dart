@@ -28,6 +28,19 @@ String normalizeTypedPlate(String value) =>
 bool isCompleteTypedPlate(String value) =>
     RegExp(r'^[A-Z]{2}\d{4,5}$').hasMatch(normalizeTypedPlate(value));
 
+String? speechLocaleIdForLanguage(String language, Iterable<String> localeIds) {
+  final wanted = language == 'en' ? 'en' : 'nb';
+  for (final localeId in localeIds) {
+    final normalized = localeId.replaceAll('_', '-').toLowerCase();
+    if (wanted == 'en' && normalized.startsWith('en-')) return localeId;
+    if (wanted == 'nb' &&
+        (normalized.startsWith('nb-') || normalized.startsWith('no-'))) {
+      return localeId;
+    }
+  }
+  return null;
+}
+
 String? parseTempoSpokenPlate(String words) {
   final transcript = words.toUpperCase()
       .replaceAll(RegExp(r'[^A-ZÆØÅ0-9\s]'), ' ')
