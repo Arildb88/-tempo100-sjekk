@@ -19,21 +19,21 @@ void main() {
     });
   });
 
-  group('Tempo 100 voice command', () {
-    test('extracts plate after Norwegian wake phrase', () {
-      expect(parseTempo100SpokenPlate('Tempo 100, AB 1 2 3 4 5'), 'AB12345');
-      expect(parseTempo100SpokenPlate('Tempo100, AB 12345'), 'AB12345');
-      expect(parseTempo100SpokenPlate('Tempo hundre AB 1234'), 'AB1234');
+  group('Tempo voice command', () {
+    test('extracts plate after the short Norwegian wake word', () {
+      expect(parseTempoSpokenPlate('Tempo, AB 1 2 3 4 5'), 'AB12345');
+      expect(parseTempoSpokenPlate('Tempo AB 12345'), 'AB12345');
+      expect(parseTempoSpokenPlate('Tempo, AB 1234'), 'AB1234');
     });
 
-    test('supports English recognition of the wake phrase', () {
-      expect(parseTempo100SpokenPlate('Tempo one hundred AB 12345'), 'AB12345');
+    test('supports English recognition when English is selected in the app', () {
+      expect(parseTempoSpokenPlate('Tempo, AB 12345'), 'AB12345');
     });
 
     test('rejects missing wake phrase or incomplete plate', () {
-      expect(parseTempo100SpokenPlate('AB 12345'), isNull);
-      expect(parseTempo100SpokenPlate('Tempo 100 AB 123'), isNull);
-      expect(parseTempo100SpokenPlate('Tempo 100'), isNull);
+      expect(parseTempoSpokenPlate('AB 12345'), isNull);
+      expect(parseTempoSpokenPlate('Tempo AB 123'), isNull);
+      expect(parseTempoSpokenPlate('Tempo'), isNull);
     });
   });
 }
