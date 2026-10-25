@@ -19,6 +19,20 @@ void main() {
     });
   });
 
+  group('speech locale selection', () {
+    test('uses the installed Norwegian locale', () {
+      expect(speechLocaleIdForLanguage('no', ['en-US', 'nb_NO']), 'nb_NO');
+    });
+
+    test('uses the installed English locale', () {
+      expect(speechLocaleIdForLanguage('en', ['nb-NO', 'en_GB']), 'en_GB');
+    });
+
+    test('reports when the selected language is not installed', () {
+      expect(speechLocaleIdForLanguage('no', ['en-US']), isNull);
+    });
+  });
+
   group('Tempo voice command', () {
     test('extracts plate after the short Norwegian wake word', () {
       expect(parseTempoSpokenPlate('Tempo, AB 1 2 3 4 5'), 'AB12345');
@@ -27,7 +41,7 @@ void main() {
     });
 
     test('supports English recognition when English is selected in the app', () {
-      expect(parseTempoSpokenPlate('Tempo, AB 12345'), 'AB12345');
+      expect(parseTempoSpokenPlate('Tempo, AB one two three four five'), 'AB12345');
     });
 
     test('rejects missing wake phrase or incomplete plate', () {
