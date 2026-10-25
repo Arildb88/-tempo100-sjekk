@@ -127,18 +127,3 @@ void main() {
   }
   stdout.writeln('Android- og iOS-oppsettet for Tempo 100 er klart.');
 }
-, multiLine: true), "platform :ios, '15.5'");
-      }
-      return "platform :ios, '15.5'\n$podfile";
-    });
-  }
-  update('ios/Runner.xcodeproj/project.pbxproj', (project) =>
-      project.replaceAll(RegExp(r'IPHONEOS_DEPLOYMENT_TARGET = [0-9.]+;'), 'IPHONEOS_DEPLOYMENT_TARGET = 15.5;'));
-  }
-  final sampleTest = File('test/widget_test.dart');
-  if (sampleTest.existsSync() &&
-      sampleTest.readAsStringSync().contains('Counter increments smoke test')) {
-    sampleTest.deleteSync(); // Flutter's counter example does not match this app.
-  }
-  stdout.writeln('Android- og iOS-oppsettet for Tempo 100 er klart.');
-}
