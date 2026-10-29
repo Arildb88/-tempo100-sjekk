@@ -235,7 +235,9 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
         Padding(
           padding: const EdgeInsets.only(bottom: 20),
           child: Text(
-            (Localizations.localeOf(context).languageCode == 'en'\n                ? 'Keep the plate large and steady in the frame. Tap the plate to focus. Use the camera only as a passenger or while parked.'\n                : 'Hold skiltet stort og stødig i rammen. Trykk på skiltet for å fokusere. Bruk kameraet bare som passasjer eller når bilen står stille.'),
+            (Localizations.localeOf(context).languageCode == 'en'
+                ? 'Keep the plate large and steady in the frame. Tap the plate to focus. Use the camera only as a passenger or while parked.'
+                : 'Hold skiltet stort og stødig i rammen. Trykk på skiltet for å fokusere. Bruk kameraet bare som passasjer eller når bilen står stille.'),
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.white70),
           ),
