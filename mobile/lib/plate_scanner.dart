@@ -196,8 +196,8 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
                         final height = constraints.maxHeight;
                         if (width <= 0 || height <= 0) return;
                         final point = Offset(
-                          (details.localPosition.dx / width).clamp(0.0, 1.0),
-                          (details.localPosition.dy / height).clamp(0.0, 1.0),
+                          (details.localPosition.dx / width).clamp(0.0, 1.0).toDouble(),
+                          (details.localPosition.dy / height).clamp(0.0, 1.0).toDouble(),
                         );
                         _focusAt(point);
                       },
