@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tempo100/plate_input.dart';
+import 'package:tempo100/plate_tracker.dart';
 
 void main() {
   group('typed registration plate', () {
@@ -55,6 +56,23 @@ void main() {
       expect(parseTempoSpokenPlate('AB 12345'), isNull);
       expect(parseTempoSpokenPlate('Tempo'), isNull);
       expect(parseTempoSpokenPlate('Tempo AB 12345 CD 12345'), isNull);
+    });
+  });
+  group('live OCR plate tracker', () {
+    test('confirms a plate across one missed OCR frame', () {
+      final tracker = PlateTracker();
+      final start = DateTime(2026, 10, 29, 12);
+      expect(tracker.add('AB 12345', at: start), isNull);
+      expect(tracker.add('unrelated text', at: start.add(const Duration(milliseconds: 250))), isNull);
+      expect(tracker.add('AB 12345', at: start.add(const Duration(milliseconds: 500))), 'AB12345');
+    });
+
+    test('requires a fresh second reading after the confirmation window', () {
+      final tracker = PlateTracker();
+      final start = DateTime(2026, 10, 29, 12);
+      expect(tracker.add('AB 12345', at: start), isNull);
+      expect(tracker.add('unrelated text', at: start.add(const Duration(seconds: 3))), isNull);
+      expect(tracker.add('AB 12345', at: start.add(const Duration(seconds: 4))), isNull);
     });
   });
 }
