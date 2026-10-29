@@ -3,10 +3,14 @@ final _platePattern = RegExp(
 );
 
 class PlateTracker {
+  static const _confirmationWindow = Duration(seconds: 2);
+
   String? _last;
+  DateTime? _lastSeen;
   int _count = 0;
 
-  String? add(String raw) {
+  String? add(String raw, {DateTime? at}) {
+    final now = at ?? DateTime.now();
     final candidates = _platePattern.allMatches(raw.toUpperCase())
         .map((match) {
           final letters = match.group(2)!.replaceAll(RegExp(r'\s+'), '');
@@ -14,18 +18,44 @@ class PlateTracker {
           return '$letters$digits';
         })
         .toSet();
-    if (candidates.length != 1) {
+
+    if (candidates.length > 1) {
       reset();
       return null;
     }
+    if (candidates.isEmpty) {
+      _expireIfStale(now);
+      return null;
+    }
+
     final candidate = candidates.single;
-    _count = candidate == _last ? _count + 1 : 1;
-    _last = candidate;
+    final previousSeen = _lastSeen;
+    final withinWindow = previousSeen != null &&
+        !now.isBefore(previousSeen) &&
+        now.difference(previousSeen) <= _confirmationWindow;
+
+    if (candidate == _last && withinWindow) {
+      _count++;
+    } else {
+      _last = candidate;
+      _count = 1;
+    }
+    _lastSeen = now;
     return _count >= 2 ? candidate : null;
+  }
+
+  void _expireIfStale(DateTime now) {
+    final previousSeen = _lastSeen;
+    if (previousSeen != null &&
+        (now.isBefore(previousSeen) ||
+            now.difference(previousSeen) > _confirmationWindow)) {
+      reset();
+    }
   }
 
   void reset() {
     _last = null;
+    _lastSeen = null;
     _count = 0;
   }
 }
