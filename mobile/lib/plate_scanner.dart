@@ -70,7 +70,7 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
 
       _description = description;
       _camera = controller;
-      setState(() => _message = 'Hold hele skiltet midt i rammen – trykk på skiltet for å fokusere');
+      setState(() => _message = 'Hold hele skiltet i rammen – én linje eller to');
       await controller.startImageStream(_scan);
     } catch (_) {
       if (mounted) setState(() => _message = 'Kunne ikke starte kameraet. Skriv registreringsnummeret manuelt.');
@@ -235,7 +235,7 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
         Padding(
           padding: const EdgeInsets.only(bottom: 20),
           child: Text(
-            tr(context, 'Skiltlesingen er raskest når skiltet fyller rammen. Trykk på skiltet for å fokusere. Bruk kameraet bare som passasjer eller når bilen står stille.'),
+            (Localizations.localeOf(context).languageCode == 'en'\n                ? 'Keep the plate large and steady in the frame. Tap the plate to focus. Use the camera only as a passenger or while parked.'\n                : 'Hold skiltet stort og stødig i rammen. Trykk på skiltet for å fokusere. Bruk kameraet bare som passasjer eller når bilen står stille.'),
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.white70),
           ),
