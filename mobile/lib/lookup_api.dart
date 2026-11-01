@@ -34,6 +34,15 @@ class LookupApi {
     return (jsonDecode(response.body) as Map<String, dynamic>)['mode'] as String;
   }
 
+  /// Sends a longer-lived request to the health/config endpoint to wake a
+  /// sleeping test server before the user retries a vehicle lookup.
+  Future<String> wake() async {
+    final response = await _client.get(base.resolve('/api/config'))
+        .timeout(const Duration(seconds: 120));
+    if (response.statusCode != 200) throw const HttpException('Serveren svarer ikke.');
+    return (jsonDecode(response.body) as Map<String, dynamic>)['mode'] as String;
+  }
+
   Future<LookupResult> lookup(String plate) async {
     final response = await _client.post(base.resolve('/api/lookup'),
         headers: {'Content-Type': 'application/json'},
