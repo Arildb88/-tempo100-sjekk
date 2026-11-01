@@ -463,10 +463,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   icon: _wakingServer
                       ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                       : const Icon(Icons.cloud_sync_outlined),
-                  label: Text(tr(context, _wakingServer
-                      ? 'Vekker testserver …'
-                      : _wakeSecondsRemaining > 0
-                          ? 'Vent $_wakeSecondsRemaining sekunder …'
+                  label: Text(_wakeSecondsRemaining > 0
+                      ? (widget.language == 'en'
+                          ? 'Wait $_wakeSecondsRemaining seconds …'
+                          : 'Vent $_wakeSecondsRemaining sekunder …')
+                      : tr(context, _wakingServer
+                          ? 'Vekker testserver …'
                           : 'Vekk testserver')),
                 ),
               ),
