@@ -135,7 +135,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         if (_wakeSecondsRemaining <= 1) {
           timer.cancel();
           setState(() => _wakeSecondsRemaining = 0);
-          _scheduleAutomaticLookup(_plate.text);
         } else {
           setState(() => _wakeSecondsRemaining--);
         }
@@ -150,7 +149,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Future<void> _lookup() async {
-    if (_loading || _mode == null) return;
+    if (_loading || _mode == null || _wakingServer || _wakeSecondsRemaining > 0) return;
     final value = _plate.text.trim();
     if (value.isEmpty) return;
     final version = ++_lookupVersion;
@@ -489,10 +488,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             onChanged: _onPlateChanged,
             onSubmitted: (_) => _submitPlate()),
           const SizedBox(height: 12),
-          FilledButton(onPressed: _loading || _mode == null ? null : _submitPlate, child: Text(tr(context, _loading ? 'Sjekker …' : 'Sjekk registreringsnummer'))),
-          OutlinedButton.icon(onPressed: _mode == null ? null : _scan, icon: const Icon(Icons.camera_alt_outlined), label: Text(tr(context, 'Les skilt med kamera'))),
+          FilledButton(onPressed: _loading || _mode == null || _wakingServer || _wakeSecondsRemaining > 0 ? null : _submitPlate, child: Text(tr(context, _loading ? 'Sjekker …' : 'Sjekk registreringsnummer'))),
+          OutlinedButton.icon(onPressed: _mode == null || _wakingServer || _wakeSecondsRemaining > 0 ? null : _scan, icon: const Icon(Icons.camera_alt_outlined), label: Text(tr(context, 'Les skilt med kamera'))),
           OutlinedButton.icon(
-            onPressed: _loading || _mode == null ? null : _startVoiceInput,
+            onPressed: _loading || _mode == null || _wakingServer || _wakeSecondsRemaining > 0 ? null : _startVoiceInput,
             icon: Icon(_listening ? Icons.mic : Icons.mic_none),
             label: Text(tr(context, _listening ? 'Lytter … si «Tempo» og bokstavene og tallene' : 'Si «Tempo» + bokstaver og tall')),
           ),
