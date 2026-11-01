@@ -25,6 +25,12 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
   bool _busy = false;
   bool _found = false;
   bool _starting = false;
+  bool _zoomUpdating = false;
+  double _minZoom = 1;
+  double _maxZoom = 1;
+  double _zoom = 1;
+  double _pinchStartZoom = 1;
+  double? _pendingZoom;
   String _message = 'Starter kamera …';
   DateTime _lastFrame = DateTime.fromMillisecondsSinceEpoch(0);
 
@@ -66,6 +72,20 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
         }
       } catch (_) {
         // Some cameras do not support focus or exposure points.
+      }
+
+      // Start slightly zoomed in, while allowing each device to use its own range.
+      try {
+        _minZoom = await controller.getMinZoomLevel();
+        _maxZoom = await controller.getMaxZoomLevel();
+        _zoom = (_minZoom + 0.5).clamp(_minZoom, _maxZoom).toDouble();
+        if (_zoom > _minZoom) {
+          await controller.setZoomLevel(_zoom);
+        }
+      } catch (_) {
+        _minZoom = 1;
+        _maxZoom = 1;
+        _zoom = 1;
       }
 
       _description = description;
@@ -122,6 +142,28 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
       }
     } catch (_) {
       // Keep scanning if a device rejects a tap-to-focus request.
+    }
+  }
+
+  Future<void> _setZoom(double value) async {
+    final controller = _camera;
+    if (controller == null || !controller.value.isInitialized) return;
+    final zoom = value.clamp(_minZoom, _maxZoom).toDouble();
+    if (mounted) setState(() => _zoom = zoom);
+    _pendingZoom = zoom;
+    if (_zoomUpdating) return;
+
+    _zoomUpdating = true;
+    try {
+      while (_pendingZoom != null && mounted) {
+        final nextZoom = _pendingZoom!;
+        _pendingZoom = null;
+        await controller.setZoomLevel(nextZoom);
+      }
+    } catch (_) {
+      // Keep the last displayed zoom if a device rejects a zoom update.
+    } finally {
+      _zoomUpdating = false;
     }
   }
 
@@ -201,6 +243,12 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
                         );
                         _focusAt(point);
                       },
+                      onScaleStart: (_) => _pinchStartZoom = _zoom,
+                      onScaleUpdate: (details) {
+                        if (details.scale != 1) {
+                          _setZoom(_pinchStartZoom * details.scale);
+                        }
+                      },
                       child: CameraPreview(_camera!),
                     );
                   })
@@ -225,7 +273,43 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(children: [
+            IconButton(
+              tooltip: 'Zoom ut',
+              color: Colors.white70,
+              onPressed: _maxZoom > _minZoom ? () => _setZoom(_zoom - 0.5) : null,
+              icon: const Icon(Icons.remove),
+            ),
+            Expanded(
+              child: Slider(
+                min: _minZoom,
+                max: _maxZoom > _minZoom ? _maxZoom : _minZoom + 1,
+                value: _zoom.clamp(
+                  _minZoom,
+                  _maxZoom > _minZoom ? _maxZoom : _minZoom + 1,
+                ),
+                onChanged: _maxZoom > _minZoom ? _setZoom : null,
+              ),
+            ),
+            IconButton(
+              tooltip: 'Zoom inn',
+              color: Colors.white70,
+              onPressed: _maxZoom > _minZoom ? () => _setZoom(_zoom + 0.5) : null,
+              icon: const Icon(Icons.add),
+            ),
+            SizedBox(
+              width: 48,
+              child: Text(
+                '${_zoom.toStringAsFixed(1)}×',
+                textAlign: TextAlign.end,
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+              ),
+            ),
+          ]),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
           child: Text(
             tr(context, _message),
             textAlign: TextAlign.center,
@@ -233,11 +317,11 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 20),
+          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
           child: Text(
             (Localizations.localeOf(context).languageCode == 'en'
-                ? 'Keep the plate large and steady in the frame. Tap the plate to focus. Use the camera only as a passenger or while parked.'
-                : 'Hold skiltet stort og stødig i rammen. Trykk på skiltet for å fokusere. Bruk kameraet bare som passasjer eller når bilen står stille.'),
+                ? 'Pinch or use the slider to zoom. Keep the full plate in the frame. Tap the plate to focus. Use the camera only as a passenger or while parked.'
+                : 'Knip eller bruk glidebryteren for å zoome. Hold hele skiltet i rammen. Trykk på skiltet for å fokusere. Bruk kameraet bare som passasjer eller når bilen står stille.'),
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.white70),
           ),
