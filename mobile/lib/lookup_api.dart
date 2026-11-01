@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -49,14 +50,21 @@ class LookupApi {
       }
     }
 
-    final results = await Future.wait<String?>([
-      attempt(),
-      Future<String?>.delayed(const Duration(seconds: 1), attempt),
-    ]);
-    for (final mode in results) {
-      if (mode != null) return mode;
+    final result = Completer<String>();
+    var failedAttempts = 0;
+    void accept(String? mode) {
+      if (mode != null) {
+        if (!result.isCompleted) result.complete(mode);
+      } else if (++failedAttempts == 2 && !result.isCompleted) {
+        result.completeError(const HttpException('Serveren svarer ikke.'));
+      }
     }
-    throw const HttpException('Serveren svarer ikke.');
+
+    attempt().then(accept);
+    unawaited(Future<void>.delayed(const Duration(seconds: 1)).then((_) async {
+      accept(await attempt());
+    }));
+    return result.future;
   }
 
   Future<LookupResult> lookup(String plate) async {
