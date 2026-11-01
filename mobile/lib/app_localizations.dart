@@ -11,6 +11,11 @@ String translateForLanguage(String languageCode, String source) {
 const Map<String, String> _english = {
   'Kan tilhengeren kjøres i 100 km/t?': 'Is the trailer approved for 100 km/t?',
   'DEMO · fiktive data': 'DEMO · sample data',
+  'Testversjonen bruker en server som kan gå i dvale. Trykk «Vekk testserver», vent til serveren svarer, og vent deretter 10 sekunder før du prøver oppslaget på nytt.': 'The test version uses a server that may go to sleep. Tap “Wake test server”, wait for it to respond, then wait another 10 seconds before trying the lookup again.',
+  'Vekk testserver': 'Wake test server',
+  'Vekker testserver …': 'Waking test server…',
+  'Vent $_wakeSecondsRemaining sekunder …': 'Wait $_wakeSecondsRemaining seconds…',
+  'Testserveren svarte ikke. Vent litt og prøv å vekke den igjen.': 'The test server did not respond. Wait a little and try waking it again.',
   'Registeroppslag · Statens vegvesen': 'Registry lookup · Norwegian Public Roads Administration',
   'Testserver (debug)': 'Test server (debug)',
   'Serveradresse': 'Server address',
