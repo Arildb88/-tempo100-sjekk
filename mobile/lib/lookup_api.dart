@@ -34,13 +34,29 @@ class LookupApi {
     return (jsonDecode(response.body) as Map<String, dynamic>)['mode'] as String;
   }
 
-  /// Sends a longer-lived request to the health/config endpoint to wake a
-  /// sleeping test server before the user retries a vehicle lookup.
+  /// Sends two quick requests to wake a sleeping test server. The second
+  /// request is staggered so it can reach the service while the first is pending.
   Future<String> wake() async {
-    final response = await _client.get(base.resolve('/api/config'))
-        .timeout(const Duration(seconds: 120));
-    if (response.statusCode != 200) throw const HttpException('Serveren svarer ikke.');
-    return (jsonDecode(response.body) as Map<String, dynamic>)['mode'] as String;
+    Future<String?> attempt() async {
+      try {
+        final response = await _client.get(base.resolve('/api/config'))
+            .timeout(const Duration(seconds: 120));
+        if (response.statusCode != 200) return null;
+        return (jsonDecode(response.body) as Map<String, dynamic>)['mode'] as String;
+      } catch (_) {
+        // One failed request should not prevent the second wake-up attempt.
+        return null;
+      }
+    }
+
+    final results = await Future.wait<String?>([
+      attempt(),
+      Future<String?>.delayed(const Duration(seconds: 1), attempt),
+    ]);
+    for (final mode in results) {
+      if (mode != null) return mode;
+    }
+    throw const HttpException('Serveren svarer ikke.');
   }
 
   Future<LookupResult> lookup(String plate) async {
