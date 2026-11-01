@@ -74,11 +74,11 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
         // Some cameras do not support focus or exposure points.
       }
 
-      // Start slightly zoomed in, while allowing each device to use its own range.
+      // Start at 2x where supported; allow each device to use its own zoom range.
       try {
         _minZoom = await controller.getMinZoomLevel();
         _maxZoom = await controller.getMaxZoomLevel();
-        _zoom = (_minZoom + 0.5).clamp(_minZoom, _maxZoom).toDouble();
+        _zoom = (_minZoom + 1.0).clamp(_minZoom, _maxZoom).toDouble();
         if (_zoom > _minZoom) {
           await controller.setZoomLevel(_zoom);
         }
