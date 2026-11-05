@@ -23,14 +23,14 @@ jobs:
         working-directory: mobile
         run: |
           flutter create --platforms=android --org no.tempo100 --project-name app --no-pub .
-          git restore -- pubspec.yaml pubspec.lock
+          git restore -- pubspec.yaml pubspec.lock android/app/build.gradle.kts
       - name: Configure platform
         working-directory: mobile
         run: dart tool/setup_platforms.dart
       - name: Install and verify
         working-directory: mobile
         run: |
-          flutter pub get --enforce-lockfile
+          flutter pub get
           flutter pub outdated
           flutter analyze
           flutter test

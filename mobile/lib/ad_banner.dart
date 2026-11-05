@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+import 'app_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 // App IDs are configured natively; these are banner ad unit IDs.
@@ -29,17 +31,25 @@ class _ConsentBannerState extends State<ConsentBanner> {
   }
 
   void _requestConsent() {
-    ConsentInformation.instance.requestConsentInfoUpdate(
-      ConsentRequestParameters(),
-      () async {
-        final required = await ConsentInformation.instance
-            .getPrivacyOptionsRequirementStatus() == PrivacyOptionsRequirementStatus.required;
-        if (mounted) setState(() => _showPrivacyOptions = required);
-        ConsentForm.loadAndShowConsentFormIfRequired((_) => _loadIfAllowed());
-        _loadIfAllowed(); // Previous session's consent may already allow ads.
-      },
-      (_) => _loadIfAllowed(),
-    );
+    try {
+      ConsentInformation.instance.requestConsentInfoUpdate(
+        ConsentRequestParameters(),
+        () async {
+          try {
+            final required = await ConsentInformation.instance
+                .getPrivacyOptionsRequirementStatus() == PrivacyOptionsRequirementStatus.required;
+            if (mounted) setState(() => _showPrivacyOptions = required);
+            ConsentForm.loadAndShowConsentFormIfRequired((_) => _loadIfAllowed());
+            _loadIfAllowed(); // Previous session's consent may already allow ads.
+          } catch (_) {
+            // Consent and ads are optional; an SDK error must not affect app startup.
+          }
+        },
+        (_) => _loadIfAllowed(),
+      );
+    } catch (_) {
+      // Consent and ads are optional; an SDK error must not affect app startup.
+    }
   }
 
   Future<void> _loadIfAllowed() async {
@@ -86,13 +96,13 @@ class _ConsentBannerState extends State<ConsentBanner> {
     mainAxisSize: MainAxisSize.min,
     children: [
       if (_ad != null) ...[
-        const Padding(padding: EdgeInsets.only(top: 4), child: Text('Annonse', style: TextStyle(fontSize: 11))),
+        Padding(padding: const EdgeInsets.only(top: 4), child: Text(tr(context, 'Annonse'), style: const TextStyle(fontSize: 11))),
         SizedBox(width: _ad!.size.width.toDouble(), height: _ad!.size.height.toDouble(), child: AdWidget(ad: _ad!)),
       ],
       if (_showPrivacyOptions)
         TextButton(
           onPressed: () => ConsentForm.showPrivacyOptionsForm((_) {}),
-          child: const Text('Personvernvalg'),
+          child: Text(tr(context, 'Personvernvalg')),
         ),
     ],
   );

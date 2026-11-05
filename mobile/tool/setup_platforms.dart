@@ -55,6 +55,20 @@ void main() {
       xml = xml.replaceFirst('<application',
           '<uses-permission android:name="android.permission.CAMERA"/>\n    <uses-permission android:name="android.permission.INTERNET"/>\n    <application');
     }
+    if (!xml.contains('android.permission.RECORD_AUDIO')) {
+      xml = xml.replaceFirst(
+        '<uses-permission android:name="android.permission.INTERNET"/>',
+        '<uses-permission android:name="android.permission.INTERNET"/>\n    <uses-permission android:name="android.permission.RECORD_AUDIO"/>',
+      );
+    }
+    if (!xml.contains('android.speech.RecognitionService')) {
+      const speechQuery = '<intent>\n            <action android:name="android.speech.RecognitionService"/>\n        </intent>\n    ';
+      if (xml.contains('<queries>')) {
+        xml = xml.replaceFirst('<queries>', '<queries>\n        $speechQuery');
+      } else {
+        xml = xml.replaceFirst('<application', '<queries>\n        $speechQuery</queries>\n    <application');
+      }
+    }
     xml = xml.replaceFirst(RegExp(r'android:label="[^"]*"'), 'android:label="Tempo 100 - Tilhengersjekk"');
     if (!xml.contains('com.google.android.gms.ads.APPLICATION_ID')) {
       xml = xml.replaceFirst('<activity',
@@ -72,6 +86,19 @@ void main() {
   if (Directory('ios').existsSync()) {
   update('ios/Runner/Info.plist', (xml) {
     xml = xml.replaceFirst(RegExp(r'(<key>CFBundleDisplayName</key>\s*<string>)[^<]*(</string>)'), r'$1Tempo 100 - Tilhengersjekk$2');
+    if (!xml.contains('NSMicrophoneUsageDescription')) {
+      xml = xml.replaceFirst('</dict>\n</plist>',
+          '  <key>NSMicrophoneUsageDescription</key>\n'
+          '  <string>Mikrofonen brukes bare når du trykker for å si registreringsnummeret.</string>\n'
+          '</dict>\n</plist>');
+    }
+    if (!xml.contains('NSSpeechRecognitionUsageDescription')) {
+      xml = xml.replaceFirst('</dict>\n</plist>',
+          '  <key>NSSpeechRecognitionUsageDescription</key>\n'
+          '  <string>Talegjenkjenning brukes bare når du trykker for å si registreringsnummeret.</string>\n'
+          '</dict>\n</plist>');
+    }
+
     if (!xml.contains('NSCameraUsageDescription')) {
       xml = xml.replaceFirst('</dict>\n</plist>',
           '  <key>NSCameraUsageDescription</key>\n'
@@ -82,12 +109,14 @@ void main() {
     }
     return xml;
   });
-  update('ios/Podfile', (podfile) {
-    if (RegExp(r'^\s*#?\s*platform :ios,', multiLine: true).hasMatch(podfile)) {
-      return podfile.replaceFirst(RegExp(r'^\s*#?\s*platform :ios,.*$', multiLine: true), "platform :ios, '15.5'");
-    }
-    return "platform :ios, '15.5'\n$podfile";
-  });
+  if (File('ios/Podfile').existsSync()) {
+    update('ios/Podfile', (podfile) {
+      if (RegExp(r'^\s*#?\s*platform :ios,', multiLine: true).hasMatch(podfile)) {
+        return podfile.replaceFirst(RegExp(r'^\s*#?\s*platform :ios,.*$', multiLine: true), "platform :ios, '15.5'");
+      }
+      return "platform :ios, '15.5'\n$podfile";
+    });
+  }
   update('ios/Runner.xcodeproj/project.pbxproj', (project) =>
       project.replaceAll(RegExp(r'IPHONEOS_DEPLOYMENT_TARGET = [0-9.]+;'), 'IPHONEOS_DEPLOYMENT_TARGET = 15.5;'));
   }

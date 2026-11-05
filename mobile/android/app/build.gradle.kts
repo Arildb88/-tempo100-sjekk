@@ -1,4 +1,3 @@
-import com.android.build.api.dsl.ApplicationExtension
 import java.util.Properties
 
 plugins {
@@ -13,7 +12,7 @@ if (keystorePropertiesFile.exists()) {
     keystorePropertiesFile.inputStream().use { keystoreProperties.load(it) }
 }
 
-extensions.configure<ApplicationExtension>("android") {
+android {
     namespace = "no.tempo100.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
@@ -28,9 +27,7 @@ extensions.configure<ApplicationExtension>("android") {
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         // Uses the version code from pubspec.yaml. When using split APKs, 1000 * ABI_VERSION
-        // is added automatically by Flutter. (https://developer.android.com/studio/build/configure-apk-splits#configure-APK-versions)
-        // You can force using the value of versionCode by specifying the `-P force-version-code-ignoring-abi=true`
-        // flag during build.
+        // is added automatically by Flutter.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -50,8 +47,13 @@ extensions.configure<ApplicationExtension>("android") {
     }
 
     buildTypes {
-    release {
-        signingConfig = signingConfigs.getByName("release")
+        release {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }

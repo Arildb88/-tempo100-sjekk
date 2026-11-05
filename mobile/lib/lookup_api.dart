@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -32,6 +33,38 @@ class LookupApi {
         .timeout(const Duration(seconds: 12));
     if (response.statusCode != 200) throw const HttpException('Serveren svarer ikke.');
     return (jsonDecode(response.body) as Map<String, dynamic>)['mode'] as String;
+  }
+
+  /// Sends two quick requests to wake a sleeping test server. The second
+  /// request is staggered so it can reach the service while the first is pending.
+  Future<String> wake() async {
+    Future<String?> attempt() async {
+      try {
+        final response = await _client.get(base.resolve('/api/config'))
+            .timeout(const Duration(seconds: 120));
+        if (response.statusCode != 200) return null;
+        return (jsonDecode(response.body) as Map<String, dynamic>)['mode'] as String;
+      } catch (_) {
+        // One failed request should not prevent the second wake-up attempt.
+        return null;
+      }
+    }
+
+    final result = Completer<String>();
+    var failedAttempts = 0;
+    void accept(String? mode) {
+      if (mode != null) {
+        if (!result.isCompleted) result.complete(mode);
+      } else if (++failedAttempts == 2 && !result.isCompleted) {
+        result.completeError(const HttpException('Serveren svarer ikke.'));
+      }
+    }
+
+    attempt().then(accept);
+    unawaited(Future<void>.delayed(const Duration(seconds: 1)).then((_) async {
+      accept(await attempt());
+    }));
+    return result.future;
   }
 
   Future<LookupResult> lookup(String plate) async {
