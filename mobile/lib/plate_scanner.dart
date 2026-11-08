@@ -62,23 +62,11 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
         return;
       }
 
-      // Aim the camera's automatic focus and exposure at the centre guide.
-      try {
-        if (controller.value.focusPointSupported) {
-          await controller.setFocusPoint(const Offset(0.5, 0.5));
-        }
-        if (controller.value.exposurePointSupported) {
-          await controller.setExposurePoint(const Offset(0.5, 0.5));
-        }
-      } catch (_) {
-        // Some cameras do not support focus or exposure points.
-      }
-
-      // Start at 2x where supported; allow each device to use its own zoom range.
+      // Read the device's supported zoom range and start closer to the plate.
       try {
         _minZoom = await controller.getMinZoomLevel();
         _maxZoom = await controller.getMaxZoomLevel();
-        _zoom = (_minZoom + 1.0).clamp(_minZoom, _maxZoom).toDouble();
+        _zoom = (_minZoom + 2.0).clamp(_minZoom, _maxZoom).toDouble();
         if (_zoom > _minZoom) {
           await controller.setZoomLevel(_zoom);
         }
@@ -86,6 +74,19 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
         _minZoom = 1;
         _maxZoom = 1;
         _zoom = 1;
+      }
+
+      // Request autofocus and meter focus/exposure on the centre of the scan guide.
+      try {
+        await controller.setFocusMode(FocusMode.auto);
+        if (controller.value.focusPointSupported) {
+          await controller.setFocusPoint(const Offset(0.5, 0.5));
+        }
+        if (controller.value.exposurePointSupported) {
+          await controller.setExposurePoint(const Offset(0.5, 0.5));
+        }
+      } catch (_) {
+        // Some cameras do not support configurable autofocus or metering points.
       }
 
       _description = description;
