@@ -260,8 +260,8 @@ class _PlateScannerState extends State<PlateScanner> with WidgetsBindingObserver
                 IgnorePointer(
                   child: Center(
                     child: Container(
-                      width: 280,
-                      height: 116,
+                      width: 240,
+                      height: 88,
                       decoration: BoxDecoration(
                         border: Border.all(color: const Color(0xFFD3B5FF), width: 2),
                         borderRadius: BorderRadius.circular(10),
