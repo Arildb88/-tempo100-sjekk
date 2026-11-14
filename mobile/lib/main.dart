@@ -89,9 +89,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   int _lookupVersion = 0;
   int _configVersion = 0;
   Timer? _autoLookupTimer;
-  Timer? _wakeCountdownTimer;
-  int _wakeSecondsRemaining = 0;
-  bool _wakingServer = false;
   String? _autoLookupCandidate;
 
   @override
@@ -115,41 +112,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _wakeTestServer() async {
-    if (_wakingServer || _wakeSecondsRemaining > 0) return;
-    final version = ++_configVersion;
-    setState(() { _wakingServer = true; _error = null; });
-    try {
-      final mode = await _api.wake();
-      if (!mounted || version != _configVersion) return;
-      _wakeCountdownTimer?.cancel();
-      setState(() {
-        _mode = mode;
-        _wakeSecondsRemaining = 10;
-      });
-      _wakeCountdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (!mounted) {
-          timer.cancel();
-          return;
-        }
-        if (_wakeSecondsRemaining <= 1) {
-          timer.cancel();
-          setState(() => _wakeSecondsRemaining = 0);
-        } else {
-          setState(() => _wakeSecondsRemaining--);
-        }
-      });
-    } catch (_) {
-      if (mounted && version == _configVersion) {
-        setState(() => _error = 'Testserveren svarte ikke. Vent litt og prøv å vekke den igjen.');
-      }
-    } finally {
-      if (mounted) setState(() => _wakingServer = false);
-    }
-  }
-
   Future<void> _lookup() async {
-    if (_loading || _mode == null || _wakingServer || _wakeSecondsRemaining > 0) return;
+    if (_loading || _mode == null) return;
     final value = _plate.text.trim();
     if (value.isEmpty) return;
     final version = ++_lookupVersion;
@@ -413,7 +377,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     _lookupVersion++;
     _configVersion++;
     _autoLookupTimer?.cancel();
-    _wakeCountdownTimer?.cancel();
     _plate.dispose();
     _server.dispose();
     _api.dispose();
@@ -448,32 +411,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         Text(tr(context, 'Kan tilhengeren kjøres i 100 km/t?'), style: const TextStyle(fontSize: 27, fontWeight: FontWeight.bold, height: 1.2)),
         const SizedBox(height: 16),
         if (_mode != null) _Notice(tr(context, _mode == 'demo' ? 'DEMO · fiktive data' : 'Registeroppslag · Statens vegvesen'), _mode == 'demo' ? const Color(0xFFFFF2D6) : const Color(0xFFE3F5E8)),
-        Card(
-          elevation: 0,
-          color: const Color(0xFFFFF2D6),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(tr(context, 'Testversjonen bruker en server som kan gå i dvale. Trykk «Vekk testserver», vent til serveren svarer, og vent deretter 10 sekunder før du prøver oppslaget på nytt.')),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  onPressed: _wakingServer || _wakeSecondsRemaining > 0 ? null : _wakeTestServer,
-                  icon: _wakingServer
-                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Icon(Icons.cloud_sync_outlined),
-                  label: Text(_wakeSecondsRemaining > 0
-                      ? (widget.language == 'en'
-                          ? 'Wait $_wakeSecondsRemaining seconds …'
-                          : 'Vent $_wakeSecondsRemaining sekunder …')
-                      : tr(context, _wakingServer
-                          ? 'Vekker testserver …'
-                          : 'Vekk testserver')),
-                ),
-              ),
-            ]),
-          ),
-        ),
         if (!kReleaseMode) ExpansionTile(title: Text(tr(context, 'Testserver (debug)')), children: [
           TextField(controller: _server, keyboardType: TextInputType.url,
             decoration: InputDecoration(labelText: tr(context, 'Serveradresse'), hintText: 'http://192.168.1.10:3000', border: const OutlineInputBorder()),
@@ -488,10 +425,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             onChanged: _onPlateChanged,
             onSubmitted: (_) => _submitPlate()),
           const SizedBox(height: 12),
-          FilledButton(onPressed: _loading || _mode == null || _wakingServer || _wakeSecondsRemaining > 0 ? null : _submitPlate, child: Text(tr(context, _loading ? 'Sjekker …' : 'Sjekk registreringsnummer'))),
-          OutlinedButton.icon(onPressed: _mode == null || _wakingServer || _wakeSecondsRemaining > 0 ? null : _scan, icon: const Icon(Icons.camera_alt_outlined), label: Text(tr(context, 'Les skilt med kamera'))),
+          FilledButton(onPressed: _loading || _mode == null ? null : _submitPlate, child: Text(tr(context, _loading ? 'Sjekker …' : 'Sjekk registreringsnummer'))),
+          OutlinedButton.icon(onPressed: _mode == null ? null : _scan, icon: const Icon(Icons.camera_alt_outlined), label: Text(tr(context, 'Les skilt med kamera'))),
           OutlinedButton.icon(
-            onPressed: _loading || _mode == null || _wakingServer || _wakeSecondsRemaining > 0 ? null : _startVoiceInput,
+            onPressed: _loading || _mode == null ? null : _startVoiceInput,
             icon: Icon(_listening ? Icons.mic : Icons.mic_none),
             label: Text(tr(context, _listening ? 'Lytter … si «Tempo» og bokstavene og tallene' : 'Si «Tempo» + bokstaver og tall')),
           ),
